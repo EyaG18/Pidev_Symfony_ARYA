@@ -1,0 +1,125 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block AabiElWest %}
+
+{# templates/produit/add_produit.html.twig #}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .background-image {
+            background-image: url('images/ringi.jpg'); /* Remplacez '/chemin/vers/votre/image.jpg' par le chemin de votre image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh; /* Ajustez la hauteur selon vos besoins */
+            position: relative;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8); /* Fond semi-transparent pour le formulaire */
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .button-container {
+            /*text-align: Left; /* Aligner le contenu à droite */
+            /*margin-top: 30px; /* Ajouter une marge au-dessus du bouton */
+           
+            margin-top: 20px; /* Ajouter une marge au-dessus du bouton */
+            margin-left: 10px; /* Ajouter une marge à gauche pour déplacer le bouton vers la droite */
+        
+        }
+    </style>
+{% endblock %}
+
+<div class="background-image">
+ <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Nouveau Produit en Stock</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="notificationContainer"></div>
+
+            {{ form_start(form, {'id': 'monFormulaire'}) }}
+            <div class="modal-body">
+                <div class="form-group">
+                    {{ form_label(form.Id_Categorie,"Categorie du Produit") }}
+                    {{ form_errors(form.Id_Categorie) }}
+                    {{ form_widget(form.Id_Categorie, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.NomP,"Nom Produit") }}
+                    {{ form_errors(form.NomP) }}
+                    {{ form_widget(form.NomP, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.PrixP,"Prix Produit") }}
+                    {{ form_errors(form.PrixP) }}
+                    {{ form_widget(form.PrixP, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.QteP,"Quantité en Stock") }}
+                    {{ form_errors(form.QteP) }}
+                    {{ form_widget(form.QteP, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.QteSeuilP,"Quantité seuil de Stock") }}
+                    {{ form_errors(form.QteSeuilP) }}
+                    {{ form_widget(form.QteSeuilP, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.ImageP,"Image Produit") }}
+                    {{ form_errors(form.ImageP) }}
+                    {{ form_widget(form.ImageP, {'attr': {'class': 'form-control-file'}}) }}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                {{ form_widget(form.Ajouter, {'attr': {'class': 'btn btn-primary'}}) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<div class="button-container">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">
+              Ajouter Un Nouveau Produit
+            </button>
+        </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Intercepter la soumission du formulaire
+            $('#monFormulaire').submit(function(event) {
+                // Vérifier si le formulaire est valide
+                if (!this.checkValidity()) {
+                    // Empêcher la soumission du formulaire
+                    event.preventDefault();
+                    // Afficher une notification d'erreur
+                    let notification = `
+                        <div class="notification alert alert-danger alert-dismissible fade show" role="alert">
+                            Certains champs du formulaire ne sont pas valides. Veuillez les vérifier et réessayer.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>`;
+                    $('#notificationContainer').html(notification);
+                }
+            });
+        });
+    </script>
+{% endblock %}
