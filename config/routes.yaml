@@ -1,0 +1,9 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+
+# config/routes.yaml
+commande_show:
+  path: /commande/show/{id}
+  controller: App\Controller\CommandeController::showCommande

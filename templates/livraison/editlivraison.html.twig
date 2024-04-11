@@ -1,0 +1,13 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block title %}Modifier Livraison{% endblock %}
+
+{% block AabiElWest %}
+  <h1>Modifier Livraison</h1>
+
+  <form id="livraison_edit_form" method="post" action="{{ path('livraison_update', {'id': livraison.idLivraison}) }}">
+    {{ include('livraison/_form.html.twig', {'button_label': 'Enregistrer', 'livraison': livraison}) }}  <a href="{{ path('afficher_livraison') }}" class="btn btn-secondary">Retour</a>
+  </form>
+
+
+{% endblock %}

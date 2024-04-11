@@ -1,0 +1,14 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block title %}Edit Commande{% endblock %}
+
+{% block AabiElWest %}
+    <h1>Edit Commande</h1>
+
+    {{ include('commande/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+
+    <a href="{{ path('afficher_commande') }}">retour </a>
+
+
+    {{ include('commande/deletecommande.html.twig') }} {# Corrected the include file name #}
+{% endblock %}

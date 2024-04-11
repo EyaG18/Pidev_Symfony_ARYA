@@ -1,0 +1,325 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: calc(100% - 12px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .selected-products {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .selected-products h2 {
+            margin-top: 0;
+            color: #007bff;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .product-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .product-list li {
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .product-list li span {
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .product-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .product-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-actions {
+            display: flex;
+            align-items: center;
+        }
+
+
+        .product-name {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-quantity,
+        .product-color {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .product-quantity::after {
+            content: "x";
+            margin: 0 5px;
+        }
+
+        .product-color::before {
+            content: "Couleur:";
+            margin-right: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .selected-products {
+            margin-bottom: 20px;
+        }
+
+        .total-price {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+
+        .livraison-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .livraison-option input[type="radio"] {
+            display: none;
+        }
+
+        .livraison-option label {
+            cursor: pointer;
+            padding-left: 30px;
+            position: relative;
+            font-family: 'Elephant', sans-serif;
+            font-size: 18px;
+            color: #5BAADE;
+        }
+
+        .livraison-option label:before {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 2px solid #5BAADE;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: 2px;
+        }
+
+        .livraison-option input[type="radio"]:checked + label:before {
+            background-color: #5BAADE;
+        }
+
+        .livraison-option label span {
+            margin-left: 10px;
+            font-family: 'Ink Free', sans-serif;
+            color: #EEBBDF;
+        }
+
+        .payment-inputs {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<form method="post">
+    <h1>Commande</h1>
+
+    <!-- Selected Products Section -->
+    <div class="selected-products">
+        <h2>Produits sélectionnés</h2>
+        <ul class="product-list">
+            <li>
+                <div class="product-details">
+                    <div class="product-name">T-shirt</div>
+                    <div class="product-quantity">2</div>
+                 
+                </div>
+            </li>
+           
+            <!-- Add more items dynamically here -->
+        </ul>
+    </div>
+    <!-- Total Price -->
+    <div class="total-price">Prix total: DT</div>
+
+    <!-- Contact Information -->
+    <div class="form-group">
+        <label for="input_nom">Nom </label>
+        <input type="text" id="input_nom" name="nom" required>
+    
+        <label for="input_entreprise">Prenom</label>
+        <input type="text" id="input_entreprise" name="entreprise">
+    
+        <label for="input_telephone">Numéro de téléphone</label>
+        <input type="tel" id="input_telephone" name="telephone">
+    </div>
+    <div class="form-group">
+        <label for="input_email">Email</label>
+        <input type="email" id="input_email" name="email">
+    </div>
+
+  
+
+    <!-- Postal Address -->
+    <div class="form-group postal-address">
+        <label for="input_adresse">Adresse de livraison:</label>
+        <input type="text" id="input_adresse" name="adresse">
+    </div>
+    <div class="form-group">
+        <label for="input_code_postal">Code postal:</label>
+        <input type="text" id="input_code_postal" name="code_postal" style="width: 120px;">
+    </div>
+    <!-- Livraison Options -->
+    <div class="form-group">
+        <label>Mode de livraison</label>
+        <div class="livraison-option">
+            <input type="radio" id="retrait_magasin" name="livraison_mode" value="retrait_magasin" checked>
+            <label for="retrait_magasin">Retrait en Magasin <span>(Gratuit)</span></label>
+        </div>
+        <div class="livraison-option">
+            <input type="radio" id="livraison_domicile" name="livraison_mode" value="livraison_domicile">
+            <label for="livraison_domicile">Livraison à Domicile <span>(Frais supplémentaires)</span></label>
+        </div>
+    </div>
+
+    <!-- Payment Input (Shown when Livraison à Domicile is selected) -->
+    <div class="payment-inputs">
+        <div class="form-group">
+            <label for="input_card_number">Numéro de carte:</label>
+            <input type="text" id="input_card_number" name="card_number" required>
+        </div>
+        <div class="form-group">
+            <label for="input_card_holder">Titulaire de la carte:</label>
+            <input type="text" id="input_card_holder" name="card_holder" required>
+        </div>
+        <div class="form-group">
+            <label for="input_exp_date">Date d'expiration:</label>
+            <input type="text" id="input_exp_date" name="exp_date" required>
+        </div>
+        <div class="form-group">
+            <label for="input_cvv">CVV:</label>
+            <input type="text" id="input_cvv" name="cvv" required>
+        </div>
+    </div>
+
+    <!-- Notes/Instructions -->
+    <div class="form-group">
+        <label for="input_notes">Notes/Instructions:</label>
+        <textarea id="input_notes" name="notes"></textarea>
+    </div>
+
+    <!-- Submit Buttons -->
+    <div class="form-group">
+        <button type="button" class="form-submit-print">Imprimer la facture</button>
+        <button type="submit" class="form-submit-button">Confirmer</button>
+    </div>
+</form>
+
+<script>
+    // Script to show/hide payment input based on livraison_mode
+    document.querySelectorAll('input[name="livraison_mode"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (this.value === 'livraison_domicile') {
+                document.querySelector('.payment-inputs').style.display = 'block';
+            } else {
+                document.querySelector('.payment-inputs').style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
