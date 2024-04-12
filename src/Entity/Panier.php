@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Produit;
+use App\Entity\User;
 
 /**
  * Panier
@@ -28,7 +30,7 @@ class Panier
     private $quantiteparproduit;
 
     /**
-     * @var \User
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
@@ -38,7 +40,7 @@ class Panier
     private $idUser;
 
     /**
-     * @var \Produit
+     * @var Produit
      *
      * @ORM\ManyToOne(targetEntity="Produit")
      * @ORM\JoinColumns({
@@ -57,7 +59,7 @@ class Panier
         return $this->quantiteparproduit;
     }
 
-    public function setQuantiteparproduit(int $quantiteparproduit): static
+    public function setQuantiteparproduit(int $quantiteparproduit): self
     {
         $this->quantiteparproduit = $quantiteparproduit;
 
@@ -69,7 +71,7 @@ class Panier
         return $this->idUser;
     }
 
-    public function setIdUser(?User $idUser): static
+    public function setIdUser(?User $idUser): self
     {
         $this->idUser = $idUser;
 
@@ -81,17 +83,12 @@ class Panier
         return $this->idProduit;
     }
 
-    public function setIdProduit(?Produit $idProduit): static
+    public function setIdProduit(?Produit $idProduit): self
     {
         $this->idProduit = $idProduit;
 
         return $this;
     }
-    public function __toString()
-{
-    return "Panier ID: " . $this->getIdPanier() . ", Quantity: " . $this->getQuantiteparproduit();
-}
-
 
 
 }

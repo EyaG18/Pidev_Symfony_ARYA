@@ -80,7 +80,7 @@ class User
         return $this->nomuser;
     }
 
-    public function setNomuser(?string $nomuser): static
+    public function setNomuser(?string $nomuser): self
     {
         $this->nomuser = $nomuser;
 
@@ -92,7 +92,7 @@ class User
         return $this->prenomuser;
     }
 
-    public function setPrenomuser(?string $prenomuser): static
+    public function setPrenomuser(?string $prenomuser): self
     {
         $this->prenomuser = $prenomuser;
 
@@ -104,7 +104,7 @@ class User
         return $this->adruser;
     }
 
-    public function setAdruser(string $adruser): static
+    public function setAdruser(string $adruser): self
     {
         $this->adruser = $adruser;
 
@@ -116,7 +116,7 @@ class User
         return $this->emailusr;
     }
 
-    public function setEmailusr(string $emailusr): static
+    public function setEmailusr(string $emailusr): self
     {
         $this->emailusr = $emailusr;
 
@@ -128,7 +128,7 @@ class User
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(string $password): self
     {
         $this->password = $password;
 
@@ -140,7 +140,7 @@ class User
         return $this->numtel;
     }
 
-    public function setNumtel(int $numtel): static
+    public function setNumtel(int $numtel): self
     {
         $this->numtel = $numtel;
 
@@ -152,7 +152,7 @@ class User
         return $this->role;
     }
 
-    public function setRole(?string $role): static
+    public function setRole(?string $role): self
     {
         $this->role = $role;
 

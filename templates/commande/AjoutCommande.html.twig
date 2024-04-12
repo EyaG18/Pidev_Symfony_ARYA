@@ -1,13 +1,12 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Commande{% endblock %}
-
 {% block stylesheets %}
     {{ parent() }}
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #fff;
             margin: 0;
             padding: 0;
         }
@@ -15,8 +14,6 @@
         form {
             background-color: #fff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
             margin: 20px auto;
             max-width: 600px;
         }
@@ -212,114 +209,104 @@
             display: none;
             margin-top: 20px;
         }
-    </style>
-{% endblock %}
+    </style>{%endblock%}
 
-{% block body %}
-<form method="post">
-    <h1>Commande</h1>
-
-    <!-- Selected Products Section -->
-    <div class="selected-products">
-        <h2>Produits sélectionnés</h2>
-        <ul class="product-list">
-            <li>
-                <div class="product-details">
-                    <div class="product-name">T-shirt</div>
-                    <div class="product-quantity">2</div>
-                 
+{% block AabiElWest1  %}
+        <form method="post">
+            <h1>Commande</h1>
+            <div class="form-group">
+                <label for="panierId">Enter Panier ID:</label>
+                <input type="text" class="form-control" id="panierId" name="panierId" required>
+            </div>
+    
+            <button type="button" class="btn btn-primary" id="fetchProductsBtn">Actualiser</button>
+    
+            <div class="selected-products" id="selectedProductsSection" style="display: none;">
+                <h2>Produits sélectionnés</h2>
+                <ul class="product-list" id="productList">
+                    <!-- Les produits sélectionnés seront affichés ici -->
+                    {% for panier in paniers %}
+                        <li>
+                            <div class="product-details">
+                                <div class="product-name">{{ panier.getIdProduit().getNomp() }}</div>
+                                <div class="product-quantity">{{ panier.getQuantiteparproduit() }}</div>
+                                <div class="product-price">{{ panier.getIdProduit().getPrixp() }}</div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+    
+            <!-- Total Price -->
+            <div class="total-price">Prix total: DT</div>
+    
+            <!-- Informations client -->
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="input_nom">Nom</label>
+                    <input type="text" id="input_nom" name="nom" class="form-control" required>
                 </div>
-            </li>
-           
-            <!-- Add more items dynamically here -->
-        </ul>
-    </div>
-    <!-- Total Price -->
-    <div class="total-price">Prix total: DT</div>
-
-    <!-- Contact Information -->
-    <div class="form-group">
-        <label for="input_nom">Nom </label>
-        <input type="text" id="input_nom" name="nom" required>
+                <div class="col-md-6">
+                    <label for="input_entreprise">Prénom</label>
+                    <input type="text" id="input_entreprise" name="entreprise" class="form-control">
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="input_telephone">Numéro de téléphone</label>
+                    <input type="tel" id="input_telephone" name="telephone" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="input_email">Email</label>
+                    <input type="email" id="input_email" name="email" class="form-control">
+                </div>
+            </div>
     
-        <label for="input_entreprise">Prenom</label>
-        <input type="text" id="input_entreprise" name="entreprise">
+            <!-- Options de livraison -->
+            <div class="form-group">
+                <label>Mode de livraison</label>
+                <div class="livraison-option">
+                    <input type="radio" id="retrait_magasin" name="livraison_mode" value="retrait_magasin" checked>
+                    <label for="retrait_magasin">Retrait en Magasin <span>(Gratuit)</span></label>
+                </div>
+                <div class="livraison-option">
+                    <input type="radio" id="livraison_domicile" name="livraison_mode" value="livraison_domicile">
+                    <label for="livraison_domicile">Livraison à Domicile <span>(Frais supplémentaires)</span></label>
+                </div>
+            </div>
     
-        <label for="input_telephone">Numéro de téléphone</label>
-        <input type="tel" id="input_telephone" name="telephone">
-    </div>
-    <div class="form-group">
-        <label for="input_email">Email</label>
-        <input type="email" id="input_email" name="email">
-    </div>
-
-  
-
-    <!-- Postal Address -->
-    <div class="form-group postal-address">
-        <label for="input_adresse">Adresse de livraison:</label>
-        <input type="text" id="input_adresse" name="adresse">
-    </div>
-    <div class="form-group">
-        <label for="input_code_postal">Code postal:</label>
-        <input type="text" id="input_code_postal" name="code_postal" style="width: 120px;">
-    </div>
-    <!-- Livraison Options -->
-    <div class="form-group">
-        <label>Mode de livraison</label>
-        <div class="livraison-option">
-            <input type="radio" id="retrait_magasin" name="livraison_mode" value="retrait_magasin" checked>
-            <label for="retrait_magasin">Retrait en Magasin <span>(Gratuit)</span></label>
-        </div>
-        <div class="livraison-option">
-            <input type="radio" id="livraison_domicile" name="livraison_mode" value="livraison_domicile">
-            <label for="livraison_domicile">Livraison à Domicile <span>(Frais supplémentaires)</span></label>
-        </div>
-    </div>
-
-    <!-- Payment Input (Shown when Livraison à Domicile is selected) -->
-    <div class="payment-inputs">
-        <div class="form-group">
-            <label for="input_card_number">Numéro de carte:</label>
-            <input type="text" id="input_card_number" name="card_number" required>
-        </div>
-        <div class="form-group">
-            <label for="input_card_holder">Titulaire de la carte:</label>
-            <input type="text" id="input_card_holder" name="card_holder" required>
-        </div>
-        <div class="form-group">
-            <label for="input_exp_date">Date d'expiration:</label>
-            <input type="text" id="input_exp_date" name="exp_date" required>
-        </div>
-        <div class="form-group">
-            <label for="input_cvv">CVV:</label>
-            <input type="text" id="input_cvv" name="cvv" required>
-        </div>
-    </div>
-
-    <!-- Notes/Instructions -->
-    <div class="form-group">
-        <label for="input_notes">Notes/Instructions:</label>
-        <textarea id="input_notes" name="notes"></textarea>
-    </div>
-
-    <!-- Submit Buttons -->
-    <div class="form-group">
-        <button type="button" class="form-submit-print">Imprimer la facture</button>
-        <button type="submit" class="form-submit-button">Confirmer</button>
-    </div>
-</form>
-
-<script>
-    // Script to show/hide payment input based on livraison_mode
-    document.querySelectorAll('input[name="livraison_mode"]').forEach(function(radio) {
-        radio.addEventListener('change', function() {
-            if (this.value === 'livraison_domicile') {
-                document.querySelector('.payment-inputs').style.display = 'block';
-            } else {
-                document.querySelector('.payment-inputs').style.display = 'none';
-            }
-        });
-    });
-</script>
-{% endblock %}
+            <!-- Saisie de paiement (Affichée lorsque Livraison à Domicile est sélectionnée) -->
+            <div class="payment-inputs" style="display: none;">
+                <div class="form-group">
+                    <label for="input_card_number">Numéro de carte:</label>
+                    <input type="text" id="input_card_number" name="card_number" required>
+                </div>
+                <div class="form-group">
+                    <label for="input_card_holder">Titulaire de la carte:</label>
+                    <input type="text" id="input_card_holder" name="card_holder" required>
+                </div>
+                <div class="form-group">
+                    <label for="input_exp_date">Date d'expiration:</label>
+                    <input type="text" id="input_exp_date" name="exp_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="input_cvv">CVV:</label>
+                    <input type="text" id="input_cvv" name="cvv" required>
+                </div>
+            </div>
+    
+            <!-- Notes/Instructions -->
+            <div class="form-group">
+                <label for="input_notes">Notes/Instructions:</label>
+                <textarea id="input_notes" name="notes"></textarea>
+            </div>
+    
+            <!-- Boutons de soumission -->
+            <div class="form-group">
+                <button type="button" class="form-submit-print">Imprimer la facture</button>
+                <button type="submit" class="form-submit-button">Confirmer</button>
+            </div>
+      </form>
+      {% endblock %}
+    

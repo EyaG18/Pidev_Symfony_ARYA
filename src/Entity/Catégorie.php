@@ -7,10 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Repository\CategoryRepository;
 
+
 /**
  * Catégorie
  *
- * @ORM\Table(name="catégorie", uniqueConstraints={@ORM\UniqueConstraint(name="UC_NomCatégorie", columns={"NomCatégorie"})})
+ * @ORM\Table(name="catégorie", uniqueConstraints={@ORM\UniqueConstraint(name="UC_NomCategorie", columns={"NomCategorie"})})
  * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
  */
 
@@ -19,12 +20,13 @@ use App\Repository\CategoryRepository;
     /**
      * 
      *
-     * @ORM\Column(name="Id_Catégorie", type="integer", nullable=false)
+     * @ORM\Column(name="Id_Categorie", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-
-   private  ?int $Id_Catégorie = null;
+ 
+   
+   public $Id_Categorie;
 
 
 
@@ -34,70 +36,36 @@ use App\Repository\CategoryRepository;
     /**
      * 
      *
-     * @ORM\Column(name="NomCatégorie", type="string", length=20, nullable=false)
+     * @ORM\Column(name="NomCategorie", type="string", length=20, nullable=false)
      */
 
-    #[ORM\Column(length:20)]
-    //private ?string $NomCategorie=null;
-    public $NomCatégorie;
+   
 
-    public function getIdCatégorie(): ?int
+    public $NomCategorie;
+
+    public function getIdCategorie(): ?int
     {
-        return $this->Id_Catégorie;
+        return $this->Id_Categorie;
     }
 
-    public function getNomcatégorie(): ?string
+    public function getNomcategorie(): ?string
     {
-        return $this->NomCatégorie;
+        return $this->NomCategorie;
     }
 
-    public function setNomcatégorie(string $nomcatégorie): self
+    public function setNomcategorie(string $NomCategorie): self
     {
-        $this->NomCatégorie = $nomcatégorie;
+        $this->NomCategorie = $NomCategorie;
 
         return $this;
     }
 
-     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Produit", mappedBy="Id_Catégorie")
-     */
-    private $produits;
-
-    public function __construct()
-    {
-        $this->produits = new ArrayCollection();
-    }
-
- /**
-     * @return Collection|Produit[]
-     */
-    public function getProduits(): Collection
-    {
-        return $this->produits;
-    }
-
-    public function addProduit(Produit $produit): static
-    {
-        if (!$this->produits->contains($produit)) {
-            $this->produits->add($produit);
-            $produit->setIdCatégorie($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProduit(Produit $produit): static
-    {
-        if ($this->produits->removeElement($produit)) {
-            // set the owning side to null (unless already changed)
-            if ($produit->getIdCatégorie() === $this) {
-                $produit->setIdCatégorie(null);
-            }
-        }
-
-        return $this;
-    }
-
+    
+     public function toStringCategory(): ?string
+     {
+         return $this->getNomcategorie();
+     }
+     
     
 
 

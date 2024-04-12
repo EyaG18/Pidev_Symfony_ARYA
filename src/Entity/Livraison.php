@@ -64,6 +64,17 @@ class Livraison
      * })
      */
     private $idCommande;
+      /**
+     * @var Commande
+     *
+     * @ORM\ManyToOne(targetEntity="Commande")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="Reference", referencedColumnName="Reference")
+     * })
+     */
+    private $reference;
+
+
 
     public function getIdLivraison(): ?int
     {

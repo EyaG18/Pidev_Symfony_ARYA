@@ -33,5 +33,16 @@
     </table>
     <a href="{{ path('afficher_commande') }}">Retour à la liste des commandes</a>
     <a href="{{ path('show_commande', {'idPanier': commande.idPanier}) }}">View Commande</a>
-
+    
+    
+    
+    {% for productDetails in paniers %}
+    <li>
+        <div class="product-details">
+            <div class="product-name">{{ productDetails.productName }}</div>
+            <div class="product-quantity">{{ productDetails.quantity }}</div>
+            <div class="product-price">{{ productDetails.price }}</div>
+        </div>
+    </li>
+{% endfor %}
 {% endblock %}

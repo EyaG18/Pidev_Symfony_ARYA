@@ -15,8 +15,8 @@ class LivraisonType extends AbstractType
         $builder
             ->add('statusLivraison', ChoiceType::class,[
                 'choices' => [
-                    'Traitée' => 'Traitée',
-                    'Annulée' => 'Annulée',
+                    'Traitee' => 'Traitee',
+                    'Annulee' => 'Annulee',
                     'En attente' => 'En attente',
                 ]
             ])
