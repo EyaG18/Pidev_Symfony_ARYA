@@ -1,0 +1,45 @@
+
+
+{% block title %}Hello ProduitController! C'est eya gadhoumi{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+   
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code><a href="{{ 'C:/Users/eya gadhoumi/SymfonyEYA/SymfonyPIDEV/src/Controller/ProduitController.php'|file_link(0) }}">src/Controller/ProduitController.php</a></code></li>
+        <li>Your template at <code><a href="{{ 'C:/Users/eya gadhoumi/SymfonyEYA/SymfonyPIDEV/templates/produit/index.html.twig'|file_link(0) }}">templates/produit/index.html.twig</a></code></li>
+    </ul>
+</div>
+
+<table border="2">
+    <tr>
+        <th>Référence Produit</th>
+        
+        <th>Nom Produit</th>
+        <th>Prix Produit</th>
+        <th>Quantité en Stock</th>
+        <th>Quantité Seuil</th>
+        <th>Lien Image</th>
+    </tr>
+    {% for a in prod %}
+    <tr>
+        <td>{{a.Id_Produit}}</td>
+        <td>{{a.NomP}}</td>
+         <td>{{a.PrixP}}</td>
+          <td>{{a.QteP}}</td>
+           <td>{{a.QteSeuilP}}</td>
+            <td>{{a.ImageP}}</td>
+         
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
+
