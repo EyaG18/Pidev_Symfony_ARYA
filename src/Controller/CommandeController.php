@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Commande;
-use App\Entity\Panier;
+use App\Entity\User;
 use App\Form\CommandeType;
 use App\Repository\PanierRepository;
 use App\Repository\CommandeRepository;
@@ -89,43 +89,90 @@ public function edit(Request $request, CommandeRepository $commandeRepository, $
         return $this->redirectToRoute('afficher_commande');
     }
 
-    #[Route('/commandes/show/{idCommande}', name: 'show_commande')]
-    public function showCommande(int $idCommande, PanierRepository $panierRepository): Response
-    {
-        $paniers = $panierRepository->findBy(['idCommande' => $idCommande]);
-        
-        // Extract data for rendering in Twig template
-        $extractedData = $panierRepository->extractDataForTwig($paniers);
 
-        return $this->render('commande/AjoutCommande.html.twig', [
-            'paniers' => $extractedData,
-        ]);
-    }
-    #[Route('/commande/add', name: 'add_commande')]
-    public function addCommande(Request $request, PanierRepository $panierRepository): Response
+    #[Route('/commande/show/{userId}', name: 'show_commande')]
+    public function showcommande($userId, Request $request, PanierRepository $panierRepository): Response
     {
-        // Récupérer l'identifiant du panier depuis la requête
-        $panierId = $request->request->get('panierId');
+        // Retrieve the user based on the provided user ID
+        $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
     
-        // Vérifier si l'identifiant du panier est fourni
-        if (!$panierId) {
-            $this->addFlash('warning', 'Veuillez fournir un identifiant de panier.');
-          
+        // Check if the user exists
+        if (!$user) {
+            $this->addFlash('warning', 'Utilisateur non trouvé.');
+            // Handle the case where the user is not found, e.g., redirect or return a response
         }
     
-        // Récupérer les paniers basés sur l'identifiant du panier fourni
-        $paniers = $panierRepository->findBy(['idPanier' => $panierId]);
+        // Retrieve the paniers for the user
+        $paniers = $panierRepository->findBy(['idUser' => $userId]);
     
-        // Vérifier si des articles de panier ont été trouvés pour l'identifiant de panier fourni
+        // Check if any paniers are found for the user
         if (empty($paniers)) {
-            $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'identifiant de panier fourni.');
-           
+            $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'utilisateur fourni.');
+            // Handle the case where no paniers are found, e.g., redirect or return a response
         }
     
-        // Rendre le modèle avec les articles du panier pour l'identifiant du panier fourni
+        // Render the template with the paniers and user information
         return $this->render('commande/AjoutCommande.html.twig', [
+            'user' => $user,
             'paniers' => $paniers,
         ]);
     }
+
+    #[Route('/commande/add/{userId}', name: 'add_commande')]
+    public function addCommande($userId, Request $request, PanierRepository $panierRepository, EntityManagerInterface $entityManager): Response
+    {
+        // Retrieve the user based on the provided user ID
+        $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
     
+        // Check if the user exists
+        if (!$user) {
+            $this->addFlash('warning', 'Utilisateur non trouvé.');
+            // Handle the case where the user is not found, e.g., redirect or return a response
+        }
+    
+        // Retrieve the panier for the user
+        $panier = $panierRepository->findOneBy(['idUser' => $userId]);
+    
+        // Check if a panier is found for the user
+        if (!$panier) {
+            $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'utilisateur fourni.');
+            // Handle the case where no panier is found, e.g., redirect or return a response
+        }
+    
+        // Create a new instance of Commande
+        $commande = new Commande();
+    
+        // Set the user for the commande
+        $commande->setIdUser($user);
+    
+        // Set the Id_Panier for the commande
+        $commande->setIdPanier($panier);
+    
+        // Set the current date and time as the value for Date_com
+        $commande->setDateCom(new \DateTime());
+    
+        // Generate a random reference number
+        $reference = mt_rand(100000, 999999);
+    
+        // Set the random reference number for the commande
+        $commande->setReference($reference);
+    
+        // Check if the user selected "livraison à domicile" and set livrable accordingly
+        if ($request->request->get('livraison_mode') === 'livraison_domicile') {
+            $commande->setLivrable(1);
+        } else {
+            // If "retrait en magasin" or other options are chosen, set livrable accordingly
+            $commande->setLivrable(0);
+        }
+    
+        // Set the default status to "attente"
+        $commande->setStatus('attente');
+    
+        // Persist the commande entity to the database
+        $entityManager->persist($commande);
+        $entityManager->flush();
+    
+        // Render the confirmation page and pass the userId variable to the template
+        return $this->redirectToRoute('afficher_commande');
+    }
 }    

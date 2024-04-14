@@ -154,6 +154,11 @@ class Commande
 
         return $this;
     }
-
+   // Generate a random reference number
+   public function generateRandomReference(): void
+   {
+       // Generate a random integer between 100000 and 999999
+       $this->reference = random_int(10000, 99999);
+   }
 
 }

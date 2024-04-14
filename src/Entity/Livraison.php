@@ -5,7 +5,7 @@ use App\Entity\Commande;
 use App\Entity\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Livraison
  *
@@ -30,10 +30,14 @@ class Livraison
      */
     private $statusLivraison;
 
-    /**
+ /**
      * @var \DateTime
      *
      * @ORM\Column(name="date_livraison", type="date", nullable=false)
+     * @Assert\GreaterThanOrEqual(
+     *     "today +2 days",
+     *     message="La date de livraison doit être au moins 2 jours après la date de commande."
+     * )
      */
     private $dateLivraison;
 
@@ -64,16 +68,7 @@ class Livraison
      * })
      */
     private $idCommande;
-      /**
-     * @var Commande
-     *
-     * @ORM\ManyToOne(targetEntity="Commande")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="Reference", referencedColumnName="Reference")
-     * })
-     */
-    private $reference;
-
+      
 
 
     public function getIdLivraison(): ?int
