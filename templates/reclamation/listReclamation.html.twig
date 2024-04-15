@@ -1,0 +1,101 @@
+{% extends 'baseFront.html.twig' %}
+
+
+{% block stylesheets %}
+	{{ parent() }}
+	{# Inclut le contenu du bloc stylesheets du template parent #}
+
+	<style>
+		.wrapper {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			grid-gap: 30px;
+		}
+		.product-item {
+			background-color: #F0F8FF;
+			padding: 20px;
+			border-radius: 10px;
+			text-align: center;
+			border: 2px solid black;
+			margin-left: 20px; /* Ajoutez la marge à gauche */
+			margin-right: 20px; /* Ajoutez la marge à droite */
+		}
+		.product-item img {
+			max-width: 125%;
+			height: auto;
+		}
+		.product-item a {
+			display: inline-block;
+			background-color: #ff69b4;
+			padding: 10px 20px;
+			border-radius: 20px;
+			color: white;
+			text-decoration: none;
+		}
+		.background-colour {
+			background-color: #f5f5f5; /* Remplacez cette valeur par la nuance de gris souhaitée */
+			/*background-image: url('images/ringi.jpg');*/
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			height: 100vh;
+			position: relative;
+		}
+	</style>
+{% endblock %}
+
+
+{% block AabiElWest1 %}
+
+
+	<div class="fashion_section">
+		<div class="background-colour">
+			<h1>Reclamation traité</h1>
+			<div class="wrapper">
+				{% for R in reclamationT %}
+					<div class="product-item ">
+						<p>type de Reclamation :
+							{{ R.typeReclamation}}</p>
+						<p>description :
+							{{ R.description }}
+						</p>
+						<p>date:
+							{{ R.dateReclamation|date('Y-m-d') }}</p>
+
+						<p>statu:
+							{{ R.statuReclamation }}
+						</p>
+
+
+						<!-- Ajoutez ici le spinner pour la quantité -->
+						<!-- Ajoutez ici le bouton "Ajouter au panier" -->
+					</div>
+				{% endfor %}
+			</div>
+
+			<h1>Reclamation non traité</h1>
+			<div class="wrapper">
+				{% for R in reclamationNT %}
+					<div class="product-item ">
+						<p>type de Reclamation :
+							{{ R.typeReclamation}}</p>
+						<p>description :
+							{{ R.description }}
+						</p>
+						<p>date:
+							{{ R.dateReclamation|date('Y-m-d H:i:s') }}</p>
+
+						<p>statu:
+							{{ R.statuReclamation }}
+						</p>
+						<a class="product-button" href="{{ path('app_editReclamation', {'ref': R.idReclamation}) }}">modifier</a>
+						<a class="product-button" href="{{ path('app_deleteReclamation', {'id_r': R.idReclamation}) }}">supprimer</a>
+
+						<!-- Ajoutez ici le spinner pour la quantité -->
+						<!-- Ajoutez ici le bouton "Ajouter au panier" -->
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
