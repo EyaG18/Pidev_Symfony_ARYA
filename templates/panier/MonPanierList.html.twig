@@ -1,0 +1,35 @@
+{% extends 'baseF.html.twig' %}
+
+{% block AabiElWest1 %}
+<h1> Mon Panier </h1>
+ <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nom Produit</th>
+                            <th>Quantité choisie</th>
+                            <th>Prix du Panier</th>
+                        <th>   </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for panier in paniers %}
+                        <tr>
+                            <td>{{ panier.Id_Produit.NomP }}</td>
+                            <td>{{ panier.QuantiteParProduit }}</td>
+                            <td>{{ panier.PrixPanierUnitaire }}</td>
+                             <td> <img src="{{ asset('images/delete.png') }}" alt="Image du produit"  style="max-width: 100px; max-height: 100px;"></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9">No Record Found</td>
+                        </tr>
+                        {% endfor %}
+                      
+                    </tbody>
+                </table>
+
+  </div>    
+   <a href="{{ path('showProduitFront') }}" class="btn btn-primary">
+        <i class="fa fa-arrow-left"></i> Continuer mes achats </a>          
+ {% endblock %}

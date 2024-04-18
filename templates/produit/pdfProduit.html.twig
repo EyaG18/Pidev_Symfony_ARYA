@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Stock des Produits</title>
+    <style>
+        /* Ajoutez vos styles CSS ici */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin : 10px;
+            
+        }
+    p{
+  font-family:Monteserrat;
+           
+           
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+         .rose-bebe {
+        background-color: #FFC0CB; /* Code couleur pour le rose bébé */
+        color: white; /* Couleur du texte pour une meilleure lisibilité */
+    }
+    </style>
+</head>
+<body>
+<img src="{{absolute_url (asset('/images/logo2.png')) }}" alt="Votre Image" style="position: absolute; top: 0; right: 0 ; max-width: 100px; max-height: 100px;">
+
+
+    <h1>Bienvenue dans ARYA, l'outil révolutionnaire de Gestion de Boutiques</h1>
+    <p>Liste des Produits en Stock</p>
+    <p>Date et heure : {{ "now"|date("d/m/Y H:i") }}</p>
+
+    <table class="table" border="1">
+        <thead>
+                    <tr>
+                       <th class="rose-bebe">Référence Produit</th>
+                       <th class="rose-bebe">Nom Catégorie</th>
+                       <th class="rose-bebe">Nom Produit</th>
+                       <th class="rose-bebe">Prix Produit</th>
+                       <th class="rose-bebe">Quantité en Stock</th>
+                       <th class="rose-bebe">Quantité Seuil</th>
+                       <th class="rose-bebe">Image du Produit</th>
+                          
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for product in prod %}
+                        <tr>
+                            <td>{{ product.Id_Produit }}</td>
+                            <td>{{ product.Id_Categorie.NomCategorie }}</td>
+                            <td>{{ product.NomP }}</td>
+                            <td>{{ product.PrixP }}</td>
+                            <td>{{ product.QteP }}</td>
+                            <td>{{ product.QteSeuilP }}</td>
+<td>
+   <img src="{{absolute_url (asset('uploadsProduit/' ~ product.ImageP)) }}" style="max-width: 100px; max-height: 100px;">
+</td>
+                   
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9">No Record Found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+    </table>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
