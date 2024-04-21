@@ -45,4 +45,24 @@ class ProduitRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+//tri b Dql
+public function showAllProductsOrderByPriceDqlDesc ()
+{
+    $em=$this->getEntityManager();
+    return $em->createQuery(
+        'SELECT p FROM App\Entity\Produit p ORDER BY p.PrixP DESC' 
+    )->getResult() ; 
+}
+
+public function showAllProductsOrderByPriceDqlASC ()
+{
+    $em=$this->getEntityManager();
+    return $em->createQuery(
+        'SELECT p FROM App\Entity\Produit p ORDER BY p.PrixP ASC' 
+    )->getResult() ; 
+}
+
+
+
 }

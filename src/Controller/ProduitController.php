@@ -36,10 +36,31 @@ class ProduitController extends AbstractController
     }
 
     #[Route('/Listproduit',name:'showProduit')]
-    function affichAuthor(ProduitRepository $repo){
+    /*function affichAuthor(ProduitRepository $repo){
         $prod=$repo->findAll();
         return $this->render('produit/ListProduitBack.html.twig',['prod'=>$prod]);
+    }*/
+    function affichAuthor(ProduitRepository $repo,Request $request,PaginatorInterface $paginator): Response{
+        //$prod=$repo->findAll();
+        //return $this->render('produit/FrontProduitGrid.html.twig',['prod'=>$prod]);
+        $donnees = $this->getDoctrine()->getRepository(Produit::class)->findAll();
+        $restaurants = $paginator->paginate(
+            $donnees, // Requête contenant les données à paginer (ici nos articles)
+            $request->query->getInt('page', 1), // Numéro de la page en cours, passé dans l'URL, 1 si aucune page
+            3 // Nombre de résultats par page
+        );
+        return $this->render('produit/ListProduitBack.html.twig',['prod'=>$restaurants]);
+    
     }
+
+
+
+
+
+
+
+
+
 
     #[Route('/AjoutProduitForm', name:'ajoutProd')]
 public function AddProduit(Request $request, ManagerRegistry $mr,EntityManagerInterface $entityManager): Response
@@ -198,15 +219,109 @@ public function productDetails(int $idp): Response
         throw $this->createNotFoundException('Produit non trouvé pour l\'ID ' . $idp);
     }
 
+    $em = $this->getDoctrine()->getManager();
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
     return $this->render('produit/details.html.twig', [
         'product' => $product,
+        'cate' => $listCategories,
     ]);
 }
 
-#[Route('/ListproduitFrontEYA',name:'showProduitFront')]
-function afficherProduitsFront(ProduitRepository $repo){
-    $prod=$repo->findAll();
-    return $this->render('produit/FrontProduitGrid.html.twig',['prod'=>$prod]);
+#[Route('/Acceuil',name:'showProduitFront')]
+function afficherProduitsFront(ProduitRepository $repo,Request $request,PaginatorInterface $paginator): Response{
+    //$prod=$repo->findAll();
+    //return $this->render('produit/FrontProduitGrid.html.twig',['prod'=>$prod]);
+    $donnees = $this->getDoctrine()->getRepository(Produit::class)->findAll();
+    $restaurants = $paginator->paginate(
+        $donnees, // Requête contenant les données à paginer (ici nos articles)
+        $request->query->getInt('page', 1), // Numéro de la page en cours, passé dans l'URL, 1 si aucune page
+        8 // Nombre de résultats par page
+    );
+    $em = $this->getDoctrine()->getManager();
+$listCategories = $em->getRepository(Catégorie::class)->findAll();
+    return $this->render('produit/FrontProduitGrid.html.twig', [
+        'prod' => $restaurants,
+        'cate' => $listCategories,
+    ]);
+
+}
+
+#[Route('/AcceuilD',name:'showProduitFrontD')]
+function afficherProduitsFrontTrierProduitsDesc(ProduitRepository $repo,Request $request,PaginatorInterface $paginator): Response{
+    // Récupérez les produits triés par prix décroissant
+    $produitsTries = $repo->showAllProductsOrderByPriceDqlDesc();
+
+    // Paginez les résultats
+    $restaurants = $paginator->paginate(
+        $produitsTries,
+        $request->query->getInt('page', 1),
+        8
+    );
+    // Récupérez les catégories (vous devrez peut-être ajuster cela en fonction de votre modèle)
+    $em = $this->getDoctrine()->getManager();
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
+
+    return $this->render('produit/FrontProduitGrid.html.twig', [
+        'prod' => $restaurants,
+        'cate' => $listCategories,
+    ]);
+
+}
+
+
+#[Route('/AcceuilC',name:'showProduitFrontC')]
+function afficherProduitsFrontTrierProduitsCROISS(ProduitRepository $repo,Request $request,PaginatorInterface $paginator): Response{
+    // Récupérez les produits triés par prix décroissant
+    $produitsTries = $repo->showAllProductsOrderByPriceDqlASC ();
+
+    // Paginez les résultats
+    $restaurants = $paginator->paginate(
+        $produitsTries,
+        $request->query->getInt('page', 1),
+        8
+    );
+    // Récupérez les catégories (vous devrez peut-être ajuster cela en fonction de votre modèle)
+    $em = $this->getDoctrine()->getManager();
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
+
+    return $this->render('produit/FrontProduitGrid.html.twig', [
+        'prod' => $restaurants,
+        'cate' => $listCategories,
+    ]);
+
+}
+
+
+
+
+
+
+
+// src/Controller/ProduitController.php
+#[Route('/produits/{categoryId}', name: 'showProduitsByCategory')]
+public function showProduitsByCategory(int $categoryId, ProduitRepository $repo, PaginatorInterface $paginator, Request $request): Response
+{
+    $donnees = $repo->findBy(['Id_Categorie' => $categoryId]);
+    $restaurants = $paginator->paginate(
+        $donnees,
+        $request->query->getInt('page', 1),
+        8
+    );
+    $em = $this->getDoctrine()->getManager();
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
+
+    return $this->render('produit/FrontProduitGrid.html.twig', [
+        'prod' => $restaurants,
+        'cate' => $listCategories,
+    ]);
+}
+
+
+
+#[Route('/catii',name:'AffCatF')]
+function affichCategoryF(CategoryRepository $repo){
+    $cate=$repo->findAll();
+    return $this->render('baseF.html.twig',['cate'=>$cate]);
 }
 
 

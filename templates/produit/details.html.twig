@@ -1,5 +1,11 @@
 {% extends 'baseF.html.twig' %}
 
+{% block listeCateggFront %}
+
+ {{ parent() }}
+ {% endblock %}
+
+
 {% block stylesheets %}
     {{ parent() }}
 
@@ -87,10 +93,13 @@
 
     <img class="product-image" src="{{ asset('uploadsProduit/' ~ product.ImageP) }}" alt="Image du produit">
     <div class="details-container">
-      <h2 class="product-title">{{ product.NomP }}</h2>
+      <h2 class="product-title">{{ product.NomP }} "</h2>
       <p class="product-price">Prix : {{ product.PrixP }} DT</p>
       <input type="number" min="1" value="1" id="quantity" style = "width :100%;">
-      <button class ="add-to-cart">Ajouter au panier</button>
+      <form>
+
+      <button id="add-to-cart-button" class="add-to-cart">Ajouter au panier</button>
+      </from>
       <div class="spinner"></div>
       <a href="{{ path('showProduitFront') }}"class ="continue-shopping btn btn-primary"><i class ="fa fa-arrow-left"></i> Continuer mes achats </a> 
     </div>
@@ -98,4 +107,40 @@
 </div>
 </div>
 </div>
+<script>
+    // Récupération du bouton "Ajouter au panier"
+    var addToCartButton = document.getElementById('add-to-cart-button');
+
+    // Ajout d'un écouteur d'événement sur le clic du bouton
+    addToCartButton.addEventListener('click', function() {
+        // Récupération de l'identifiant du produit
+        var productId = '{{ product.Id_Produit }}'; // Assurez-vous que product.id correspond à l'identifiant du produit dans votre contexte Twig
+
+        // Récupération de la quantité saisie dans le spinner
+        var quantity = document.getElementById('quantity').value;
+        var price = '{{ product.PrixP }}'
+        // Envoi des données au contrôleur Symfony via une requête AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ path("addToPanier") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                // Gestion de la réponse du serveur (optionnel)
+                console.log('Produit ajouté au panier avec succès !');
+            }
+        };
+        var data = JSON.stringify({
+    productId: productId,
+    quantity: quantity,
+    price: price
+});
+        xhr.send(data);
+    });
+</script>
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
 {% endblock %}

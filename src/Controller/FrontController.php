@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Catégorie;
 use App\Entity\Produit;
 use App\Repository\ProduitRepository;
+use App\Repository\CategoryRepository;
 
 class FrontController extends AbstractController
 {
@@ -23,6 +24,8 @@ class FrontController extends AbstractController
         $prod=$repo->findAll();
         return $this->render('front/frontARYA.html.twig',['prod'=>$prod]);
     }
+
+
 
 
 }

@@ -1,6 +1,7 @@
 {% extends 'baseF.html.twig' %}
 
 
+
 {% block stylesheets %}
     {{ parent() }} {# Inclut le contenu du bloc stylesheets du template parent #}
 
@@ -81,6 +82,35 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+         .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: #333;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination .current {
+            background-color: #007bff;
+            color: white;
+             padding: 5px 10px;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+            border-radius: 5px;
+        }
 
     </style>
 {% endblock %}
@@ -102,14 +132,11 @@
 
         </div>
     {% endfor %}
-
-
-
 </div>
 
 
-
-
+</div><div class="pagination" > {{ knp_pagination_render(prod) }}</div>
+</div>
  {% endblock %}
 
 

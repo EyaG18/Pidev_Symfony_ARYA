@@ -23,7 +23,7 @@ class Produit
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
   
-    //private  ?int $Id_Produit = null;
+     //public   $Id_Produit = null;
     public $Id_Produit;
 
     /**

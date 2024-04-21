@@ -48,6 +48,12 @@ function affichCategory(CategoryRepository $repo){
     return $this->render('category/ListCategoryBack.html.twig',['cat'=>$cat]);
 }
 
+#[Route('/catii',name:'AffCatF')]
+function affichCategoryF(CategoryRepository $repo){
+    $cate=$repo->findAll();
+    return $this->render('baseF.html.twig',['cate'=>$cate]);
+}
+
 #[Route('/category/delete/{id}', name: 'category_delete')]
 public function deleteProduit($id, ManagerRegistry $manager, CategoryRepository $authorepository ): Response
 {

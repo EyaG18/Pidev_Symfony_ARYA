@@ -1,7 +1,115 @@
 {% extends 'baseF.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+
+    <style>
+        .product-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 800px; 
+            margin: 0 auto; 
+        }
+        .product-image {
+            max-width: 50%;
+        }
+        .details-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; 
+            justify-content: center; 
+            margin-left: 20px; 
+        }
+        .product-price {
+            font-weight: bold;
+        }
+        .add-to-cart,
+        .continue-shopping {
+            margin-top: 10px; 
+            width: 100%;
+            text-align: center;
+        }
+        .add-to-cart {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .add-to-cart:hover {
+            background-color: #ff3385;
+        }
+        .continue-shopping {
+            background-color: transparent;
+            color: #333; 
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .continue-shopping:hover {
+            background-color: transparent;
+        }
+          .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #ff69b4;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-left: 10px; 
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+    </style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {% block AabiElWest1 %}
-<h1> Mon Panier </h1>
+
+<div class="fashion_section">
+<div class="background-colour">
+<div class="wrapper">
+
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+<div class="product-container">
+  <div class="details-container">
+ <B> <th> Dans votre Panier </th> </B>
  <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -18,7 +126,13 @@
                             <td>{{ panier.Id_Produit.NomP }}</td>
                             <td>{{ panier.QuantiteParProduit }}</td>
                             <td>{{ panier.PrixPanierUnitaire }}</td>
-                             <td> <img src="{{ asset('images/delete.png') }}" alt="Image du produit"  style="max-width: 100px; max-height: 100px;"></td>
+                 <td>
+                                  <form action="{{ path('product_delete_panier', {'id': panier.Id_Panier}) }}" method="post">
+                                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                                 </form>
+                            </td>
+
+
                         </tr>
                         {% else %}
                         <tr>
@@ -30,6 +144,11 @@
                 </table>
 
   </div>    
-   <a href="{{ path('showProduitFront') }}" class="btn btn-primary">
-        <i class="fa fa-arrow-left"></i> Continuer mes achats </a>          
+
+        <a href="{{ path('showProduitFront') }}"class ="continue-shopping btn btn-primary"><i class ="fa fa-arrow-left"></i> Continuer mes achats </a> 
+        
+        <a href="{{ path('showProduitFront') }}"class ="continue-shopping btn btn-primary"><i class ="fa fa-arrow-right"></i> Commander </a> 
+
+</div> </div> </div> </div> </div>  </div> 
+
  {% endblock %}
