@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello FrontController!{% endblock %}
+
+{% block body %}
+<body>
+
+    <div class="container">
+        <div class="">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="custom_menu">
+                        <ul>
+                            <li><a href="#" style="color:black">Meilleurs Ventes</a></li>
+                            <li><a href="#" style="color:black">Idées Cadeaux</a></li>
+                            <li><a href="#" style="color:black">Nouvelles arrivées</a></li>
+                            <li><a href="#" style="color:black">Offres du Jour</a></li>
+                            <li><a href="#" style="color:black">Service Client</a></li>
+                            <li>
+
+                                {% if app.user %}
+                                <div class="user_info ml-4">
+
+                                    <div class="user_info ml-4">
+                                        <p class="mb-0" style="color:black">Welcome, {{ app.user.userIdentifier }} !</p>
+                                        <a class="btn btn-info" href="/profile">Profile</a>
+                                        <a class="btn btn-danger" href="/logout">Logout</a>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="auth_links">
+                                    <a class="btn btn-primary mr-2" href="/login">Login</a>
+                                    <a class="btn btn-secondary" href="/register">Register</a>
+                                </div>
+                                {% endif %}
+                            </li>
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="container mt-5 mb-5">
+    
+        <div class="row no-gutters">
+            <div class="col-md-4 col-lg-4"><img src="{{ asset('images/uploaded/' ~ app.user.image) }}"></div>
+            <div class="col-md-8 col-lg-8">
+                <div class="d-flex flex-column">
+                    <div class="d-flex flex-row justify-content-between align-items-center p-5 bg-dark text-white">
+                        <h3 class="display-5">{{ app.user.nomuser }} {{ app.user.prenomuser }}</h3><i class="fa fa-facebook"></i><i class="fa fa-google"></i><i class="fa fa-youtube-play"></i><i class="fa fa-dribbble"></i><i class="fa fa-linkedin"></i></div>
+                    <div class="p-3 bg-white text-dark">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h4 class="mb-0"><span style="font-size: 1.8em;">👤</span> <b>Name:</b></h4>
+                                <p class="mb-0">{{ app.user.nomuser }} {{ app.user.prenomuser }}</p>
+                                <h4 class="mb-0 mt-3"><span style="font-size: 1.8em;">🏠</span> <b>Address:</b></h4>
+                                <p class="mb-0">{{ app.user.AdrUser }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-0"><span style="font-size: 1.8em;">📞</span> <b>Phone Number:</b></h4>
+                                <p class="mb-0">{{ app.user.numtel }}</p>
+                                <h4 class="mb-0 mt-3"><span style="font-size: 1.8em;">👨‍💼</span> <b>Role:</b></h4>
+                                <span class="badge badge-primary">{{ app.user.Role }}</span>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <div class="d-flex flex-row text-white">
+                <div class="btn btn-primary mr-4">
+                    <a href="/profile/edit" class="text-white">Edit Profile</a>
+                </div>
+                <div class="btn btn-success mr-4">
+                    <a href="/profile/changePassword" class="text-white">Edit Password</a>
+                </div>
+                <div class="btn btn-danger mr-2">
+                    <a href="/profile/delete" class="text-white">Delete</a>
+                </div>
+            
+                  <div class="container">
+                     <a class="btn btn-secondary mr-4" href="/">Go Back</a>
+                  </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="footer_section layout_padding">
+        <div class="container">
+            <div class="footer_logo"><a href="index.html"><img src="images/footer-logo.png"></a></div>
+            <div class="input_bt">
+                <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email">
+                <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
+            </div>
+            <div class="footer_menu">
+                <ul>
+                    <li><a href="#">Meilleurs ventes</a></li>
+                    <li><a href="#">Idées Cadeaux</a></li>
+                    <li><a href="#">Nouvelles arrivées</a></li>
+                    <li><a href="#">Offres du jour</a></li>
+                    <li><a href="#">Service Client</a></li>
+                </ul>
+            </div>
+            <div class="location_main">Assistance Téléphonique: <a href="#">+216 23 067 231</a></div>
+        </div>
+    </div>
+    <!-- copyright section start -->
+    <div class="copyright_section">
+        <div class="container">
+            <p class="copyright_text">© 2024 ARYA's Team Tous les droits réservés </p>
+        </div>
+    </div>
+</body>
+{% endblock %}

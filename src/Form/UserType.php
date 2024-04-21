@@ -31,14 +31,6 @@ class UserType extends AbstractType
                 'attr' => ['class' => 'form-control form-control-user'],
                 'label' => 'Address',
             ])
-            ->add('emailusr', EmailType::class, [
-                'attr' => ['class' => 'form-control form-control-user'],
-                'label' => 'Email User',
-            ])
-            ->add('password', PasswordType::class, [
-                'attr' => ['class' => 'form-control form-control-user'],
-                'label' => 'Password',
-            ])
             ->add('numtel', IntegerType::class, [
                 'attr' => ['class' => 'form-control form-control-user'],
                 'label' => 'Numero Telephone',
@@ -55,13 +47,14 @@ class UserType extends AbstractType
             ])
             ->add('image',FileType ::class,[
                 'attr' => ['class' => 'form-control form-control-user'],
-                'required'=>false,
-                 'mapped'=>false,
+                'required' => false,
+                'data_class' => null,
             ])
-            ->add('Ajouter', SubmitType::class, [
+            ->add('Submit', SubmitType::class, [
                 'attr' => ['class' => 'btn btn-primary btn-user btn-block mt-4'],
             ]);
         ;
+        
     }
 
     public function configureOptions(OptionsResolver $resolver): void

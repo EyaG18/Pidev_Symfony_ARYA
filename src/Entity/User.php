@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
  * User
  *
@@ -12,7 +14,7 @@ use App\Repository\UserRepository;
  * @ORM\Entity
  */
 #[ORM\Entity(repositoryClass:UserRepository::class)]
-class User
+class User implements UserInterface
 {
     
     /**
@@ -78,11 +80,7 @@ class User
      * @ORM\Column(name="password", type="string", length=255, nullable=false)
      */
     #[ORM\Column(name: "password", type: "string", length: 255, nullable: false)]
-    #[Assert\NotBlank]
-    #[Assert\Regex(
-        pattern: "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/",
-        message: "The password must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long."
-    )]
+    
     private $password;
 
     
@@ -105,6 +103,11 @@ class User
     #[ORM\Column(name: "Role", type: "string", length: 0, nullable: true)]
     private $role;
 
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="image", type="string", length=255, nullable=true)
+     */
     #[ORM\Column(name: "image", type: "string", length: 255, nullable: true)]
     private $image;
 
@@ -207,5 +210,42 @@ class User
         $this->image = $image;
 
         return $this;
+    }
+    public function getUsername(): ?string
+    {
+        // You can return any unique identifier for the user here,
+        // such as email or username.
+        return $this->emailusr;
+    }
+
+    public function getRoles(): array
+    {
+        // Return an array of roles for the user.
+        // This method should return at least one role.
+       
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_'.$this->role;
+        return array_unique($roles);
+    }
+
+    public function getSalt(): ?string
+    {
+        // This method is not needed if you're not using
+        // legacy password encryption algorithms.
+        return null;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any sensitive information in plain text
+        // or other readable formats, erase it here.
+        // This method is called after the user's password has been used.
+    }
+    
+    public function getUserIdentifier(): ?string
+    {
+        // You can return any unique identifier for the user here,
+        // such as email or username.
+        return $this->emailusr;
     }
 }

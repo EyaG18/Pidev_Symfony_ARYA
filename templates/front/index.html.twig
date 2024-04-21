@@ -20,24 +20,22 @@
                            <li><a href="#">Service Client</a></li>
                            <li>
                            
-                    {% if app.session.get('user_id') is not null %}
+                    {% if app.user %}
                         <div class="user_info ml-4">
-                        {% set userId = app.session.get('user_id') %}
-                           {% if userId %}
-                              {% set userRepository = doctrine.getRepository('App\\Entity\\User') %}
-                              {% set user = userRepository.find(userId) %}
-                              {% if user %}
+                        
                                  <div class="user_info ml-4">
-                                       <p class="mb-0">Welcome, {{ user.getNomuser }} {{ user.getPrenomuser }}!</p>
-                                       <a class="btn btn-danger" href="{{ path('app_authentification_logout') }}">Logout</a>
+                                       <p class="mb-0">Welcome, {{ app.user.userIdentifier }} !</p>
+                                       {% if is_granted('ROLE_administrateur') %}
+                                          <a class="btn btn-info" href="/back">Admin</a>
+                                       {% endif %}
+                                       <a class="btn btn-info" href="/profile">Profile</a>
+                                       <a class="btn btn-danger" href="/logout">Logout</a>
                                  </div>
-                              {% endif %}
-                           {% endif %}
                         </div>
                     {% else %}
                         <div class="auth_links">
-                            <a class="btn btn-primary mr-2" href="{{ path('app_authentification_login') }}">Login</a>
-                            <a class="btn btn-secondary" href="{{ path('app_authentification_register') }}">Register</a>
+                            <a class="btn btn-primary mr-2" href="/login">Login</a>
+                            <a class="btn btn-secondary" href="/register">Register</a>
                         </div>
                     {% endif %}
                            </li>
