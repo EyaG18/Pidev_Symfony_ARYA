@@ -10,6 +10,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Livraison;
+use App\Entity\User;
+use App\Entity\Panier;
+use App\Entity\Commande;
+
 
 class LivraisonController extends AbstractController
 {
@@ -35,6 +39,7 @@ class LivraisonController extends AbstractController
     {
         // Retrieve the Livraison entity to edit based on the identifier
         $livraison = $livraisonRepository->find($id);
+        
     
         // Check if the Livraison entity exists
         if (!$livraison) {
@@ -57,7 +62,6 @@ class LivraisonController extends AbstractController
             return $this->redirectToRoute('afficher_livraison');
         }
     
-        // Render the form for editing the Livraison entity
         return $this->renderForm('livraison/editlivraison.html.twig', [
             'livraison' => $livraison,
             'form' => $form,
@@ -80,9 +84,57 @@ class LivraisonController extends AbstractController
     
             $this->addFlash('success', 'La livraison a été supprimée avec succès.');
     
-            // Assuming a route named 'afficher_livraison' exists for listing livraisons
             return $this->redirectToRoute('afficher_livraison');
         }
-    
+       
+       
+        #[Route('/livraison/add/{commandeId}', name: 'livraison_add')]
+        public function addLivraison(Request $request, $commandeId, EntityManagerInterface $entityManager)
+        {
+    // Retrieve the Commande based on the provided ID
+    $commande = $entityManager->getRepository(Commande::class)->find($commandeId);
 
-}
+    if ($commande->isLivrable()) {
+        // Create a new Livraison entity
+        $livraison = new Livraison();
+
+        // Set the reference
+        $commandeReference = $commande->getReference();
+        $livraison->setReference($commandeReference);
+
+        // Set the status
+        $livraison->setStatusLivraison('en attente');
+
+        // Set the price
+        $livraison->setPrixLivraison(8);
+
+        // Set the date
+        $commandeDate = $commande->getDateCom();
+        if ($commandeDate !== null) {
+            $livraisonDate = (new \DateTime($commandeDate->format('Y-m-d')))->modify('+2 days');
+            $livraison->setDateLivraison($livraisonDate);
+        } else {
+            $defaultLivraisonDate = new \DateTime();
+            $defaultLivraisonDate->modify('+2 days');
+            $livraison->setDateLivraison($defaultLivraisonDate);
+        }
+
+        // Set the User
+        $user = $commande->getIdUser();
+        $livraison->setIdUser($user);
+
+        // Set the Commande
+        $livraison->setIdCommande($commande);
+
+        // Persist the Livraison entity
+        $entityManager->persist($livraison);
+        $entityManager->flush();
+
+        // Redirect to a route or return a response
+        return $this->redirectToRoute('commande/confirmation.html.twig');
+    } else {
+        // Handle the case where the Commande is not livrable
+        $this->addFlash('error', 'La commande associée n\'est pas livrable.');
+        return $this->redirectToRoute('app_livraison');
+    }
+}}

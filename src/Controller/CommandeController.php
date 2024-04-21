@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Commande;
 use App\Entity\User;
+use App\Entity\Panier;
 use App\Form\CommandeType;
 use App\Repository\PanierRepository;
 use App\Repository\CommandeRepository;
@@ -13,6 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use App\Repository\UserRepository;
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 
 class CommandeController extends AbstractController
@@ -45,16 +52,6 @@ public function edit(Request $request, CommandeRepository $commandeRepository, $
 
     // Exclude user-related fields from the form (adjust field names as needed)
     $form = $this->createForm(CommandeType::class, $commande);
-    $form->remove('nomuser');
-    $form->remove('prenomuser');
-    $form->remove('emailusr');
-
-  
-    //$commande->setNomuser($commande->getIdUser()->getNomuser());
-    //$commande->setPrenomuser($commande->getIdUser()->getPrenomuser());
-    //$commande->setEmailusr($commande->getIdUser()->getEmailusr());
-
-    $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
         $entityManager->flush();
@@ -68,111 +65,271 @@ public function edit(Request $request, CommandeRepository $commandeRepository, $
     ]);
 }
 
-    
+#[Route('/commande/delete/{id}', name: 'commande_delete')]
+public function deleteCommande($id, CommandeRepository $commandeRepository, EntityManagerInterface $entityManager): Response
+{
+    $commande = $commandeRepository->find($id);
 
-
-    #[Route('/commande/delete/{id}', name: 'commande_delete')]
-    public function deleteCommande($id, CommandeRepository $commandeRepository, EntityManagerInterface $entityManager): Response
-    {
-        $commande = $commandeRepository->find($id);
-
-        if (!$commande) {
-            throw $this->createNotFoundException('Aucune commande trouvée pour cet ID: ' . $id);
-        }
-
-        $entityManager->remove($commande);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'La commande a été supprimée avec succès.');
-
-        // Assuming a route named 'afficher_commande' exists for listing commandes
-        return $this->redirectToRoute('afficher_commande');
+    if (!$commande) {
+        throw $this->createNotFoundException('Aucune commande trouvée pour cet ID: ' . $id);
     }
 
+    $entityManager->remove($commande);
+    $entityManager->flush();
 
-    #[Route('/commande/show/{userId}', name: 'show_commande')]
-    public function showcommande($userId, Request $request, PanierRepository $panierRepository): Response
-    {
-        // Retrieve the user based on the provided user ID
-        $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
-    
-        // Check if the user exists
-        if (!$user) {
-            $this->addFlash('warning', 'Utilisateur non trouvé.');
-            // Handle the case where the user is not found, e.g., redirect or return a response
-        }
-    
-        // Retrieve the paniers for the user
-        $paniers = $panierRepository->findBy(['idUser' => $userId]);
-    
-        // Check if any paniers are found for the user
-        if (empty($paniers)) {
-            $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'utilisateur fourni.');
-            // Handle the case where no paniers are found, e.g., redirect or return a response
-        }
-    
-        // Render the template with the paniers and user information
-        return $this->render('commande/AjoutCommande.html.twig', [
-            'user' => $user,
-            'paniers' => $paniers,
-        ]);
+    $this->addFlash('success', 'La commande a été supprimée avec succès.');
+
+
+    return $this->redirectToRoute('afficher_commande');
+}
+
+
+
+
+//Touskié front 
+#[Route('/commande/show/{userId}', name: 'show_commande')]
+public function showcommande($userId, Request $request, PanierRepository $panierRepository,CommandeRepository $commandeRepository): Response
+{
+    // Récupérer l'utilisateur en fonction de l'ID d'utilisateur fourni
+    $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+    // Vérifier si l'utilisateur existe
+    if (!$user) {
+        $this->addFlash('warning', 'Utilisateur non trouvé.');
+        // Rediriger ou gérer le cas où l'utilisateur n'est pas trouvé
     }
 
-    #[Route('/commande/add/{userId}', name: 'add_commande')]
-    public function addCommande($userId, Request $request, PanierRepository $panierRepository, EntityManagerInterface $entityManager): Response
-    {
-        // Retrieve the user based on the provided user ID
-        $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+    // Récupérer les paniers de l'utilisateur
+    $panier = $panierRepository->findBy(['idUser' => $userId]);
+
+    // Vérifier si des paniers sont trouvés pour l'utilisateur
+    if (empty($panier)) {
+        $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'utilisateur fourni.');
+        // Rediriger ou gérer le cas où aucun panier n'est trouvé
+    }
+
+    // Récupérer l'ID du premier panier trouvé
+    $panierId = null;
+    if (!empty($panier)) {
+        $panierId = $panier[0]->getIdPanier(); // Supposant que le premier panier correspondant est utilisé
+    }
+       // Récupérer la commande associée au panier
+       $commande = null;
+       if ($panierId) {
+           $commande = $commandeRepository->findOneBy(['idPanier' => $panierId]);
+       }
+
+    // Rendre le modèle Twig en passant les variables 'user', 'paniers' et 'panierId'
+    return $this->render('commande/AjoutCommande.html.twig', [
+        'user' => $user,
+        'panier' => $panier,
+        'panierId' => $panierId,
+        'commande' => $commande,
+    ]);
+}
+#[Route('/commande/add/{panierId}', name: 'add_commande')]
+public function addCommande($panierId, Request $request, PanierRepository $panierRepository, EntityManagerInterface $entityManager): Response
+{
+    // Retrieve the panier based on the provided panier ID
+    $panier = $panierRepository->find($panierId);
+
+    // Check if the panier exists
+    if (!$panier) {
+        $this->addFlash('warning', 'Panier non trouvé.');
+        return $this->redirectToRoute('app_livraison');
+    }
+
+    // Create a new Commande entity
+    $commande = new Commande();
+
+   // Create the form
+   $form = $this->createForm(CommandeType::class, $commande);
+   $form->remove('status');
+    // Handle form submission
+    $form->handleRequest($request);
     
-        // Check if the user exists
-        if (!$user) {
-            $this->addFlash('warning', 'Utilisateur non trouvé.');
-            // Handle the case where the user is not found, e.g., redirect or return a response
-        }
-    
-        // Retrieve the panier for the user
-        $panier = $panierRepository->findOneBy(['idUser' => $userId]);
-    
-        // Check if a panier is found for the user
-        if (!$panier) {
-            $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'utilisateur fourni.');
-            // Handle the case where no panier is found, e.g., redirect or return a response
-        }
-    
-        // Create a new instance of Commande
-        $commande = new Commande();
-    
-        // Set the user for the commande
-        $commande->setIdUser($user);
-    
-        // Set the Id_Panier for the commande
-        $commande->setIdPanier($panier);
-    
-        // Set the current date and time as the value for Date_com
-        $commande->setDateCom(new \DateTime());
-    
-        // Generate a random reference number
-        $reference = mt_rand(100000, 999999);
-    
-        // Set the random reference number for the commande
-        $commande->setReference($reference);
-    
-        // Check if the user selected "livraison à domicile" and set livrable accordingly
-        if ($request->request->get('livraison_mode') === 'livraison_domicile') {
-            $commande->setLivrable(1);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+       
+        $livrable = $commande->isLivrable();
+
+        if ($livrable === true) {
+            
+            $commande->setLivrable(true);
         } else {
-            // If "retrait en magasin" or other options are chosen, set livrable accordingly
-            $commande->setLivrable(0);
+           
+            $commande->setLivrable(false);
         }
-    
-        // Set the default status to "attente"
-        $commande->setStatus('attente');
-    
-        // Persist the commande entity to the database
+
+        // Set the Panier
+        $commande->setPanier($panier);
+
+        // Set the current date and time
+        $commande->setDateCom(new \DateTime());
+
+        // Generate a random reference number
+        $randomReference = random_int(100000, 999999);
+        $commande->setReference($randomReference);
+
+        // Set the total price
+        $commande->setPrixTotal($panier);
+
+        // Retrieve the user from the panier (assuming Panier has a getUser method)
+        $user = $panier->getUser();
+
+        // Check if user is retrieved from panier
+        if (!$user) {
+            throw new \Exception('Failed to retrieve User from Panier');
+        }
+
+        // Set the user for the Commande
+        $commande->setIdUser($user);
+
+        // Ensure both panier and user are set before persisting
+        if ($commande->getPanier() === null || $commande->getIdUser() === null) {
+            throw new \Exception('Panier and User cannot be null for Commande creation');
+        }
+
+        // Persist the Commande entity
         $entityManager->persist($commande);
         $entityManager->flush();
-    
-        // Render the confirmation page and pass the userId variable to the template
-        return $this->redirectToRoute('afficher_commande');
+        
+            
+        // Redirect to a confirmation page or route
+        return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId]);
     }
+    
+    // Render the form
+    return $this->render('commande/frontform.html.twig', [
+        'form' => $form->createView(),
+        'commande' => $commande,
+        'panier'=>$panier
+    ]);
+}
+
+#[Route('/confirmer/{panierId}', name: 'confirmer_commande')]
+public function confirmerCommande(PanierRepository $panierRepository, CommandeRepository $commandeRepository, $panierId): Response
+{
+    // Retrieve the panier associated with the provided panier ID
+    $panier = $panierRepository->find($panierId);
+    
+    // Check if a panier was found
+    if (!$panier) {
+        // Handle the case where no panier is found
+        throw $this->createNotFoundException('Le panier avec l\'identifiant '.$panierId.' n\'existe pas.');
+    }
+
+    // Retrieve the commande associated with the panier
+    $commande = $commandeRepository->findOneBy(['idPanier' => $panierId]);
+
+    // Render the confirmation page with the associated panier and commande
+    return $this->render('commande/confirmation.html.twig', [
+        'panier' => $panier, 
+        'commande' => $commande, // Pass the commande variable to the Twig template
+    ]);
+}
+
+
+
+
+#[Route('/commandefront/{userId}', name: 'afficher_commandefront')]
+public function displayUserCommands($userId, CommandeRepository $commandeRepository, UserRepository $userRepository): Response
+{
+    // Retrieve the commands associated with the user ID
+    $userCommands = $commandeRepository->findBy(['idUser' => $userId]);
+
+    // Retrieve the user object based on the user ID
+    $user = $userRepository->find($userId);
+
+    // Check if the user exists
+    if (!$user) {
+        // Handle the case where the user is not found
+        throw $this->createNotFoundException('User not found');
+    }
+
+    // Render the Twig template with the user's commands and user information
+    return $this->render('commande/CommandListFront.html.twig', [
+        'user' => $user,
+        'userId' => $userId,
+        'com' => $userCommands,
+    ]);
+}
+
+    #[Route('/commande/delete/{id}', name: 'commande_deletefront')]
+    public function deleteCommandefront($id, CommandeRepository $commandeRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Find the command entity by its ID
+        $command = $commandeRepository->find($id);
+    
+        if (!$command) {
+            return new JsonResponse(['error' => 'Command not found'], Response::HTTP_NOT_FOUND);
+        }
+    
+        // Remove the command from the database
+        $entityManager->remove($command);
+        $entityManager->flush();
+    
+        // Return success response
+        return new JsonResponse(['message' => 'Command deleted successfully']);
+    }
+    #[Route('/facture/{panierId}', name: 'facture')]
+    public function facture($panierId, PanierRepository $panierRepository, CommandeRepository $commandeRepository): Response
+    {
+        // Retrieve the panier associated with the provided panier ID
+        $panier = $panierRepository->find($panierId);
+    
+        if (!$panier) {
+            throw $this->createNotFoundException('Panier not found');
+        }
+    
+        // Retrieve the commande associated with the panier
+        $commande = $commandeRepository->findOneBy(['panier' => $panier]);
+    
+        if (!$commande) {
+            throw $this->createNotFoundException('Commande not found');
+        }
+    
+        // Determine if the commande is livrable
+        $livrable = $commande->isLivrable();
+        $frais = $livrable ? 8.00 : 0;
+    
+        return $this->render('commande/facture.html.twig', [
+            'commande' => $commande,
+            'panier' => $panier,
+            'frais' => $frais
+        ]);
+    }
+    
+
+    #[Route('/facturepdf', name: 'facturepdf')]
+
+    public function indexpdf()
+    {
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf($pdfOptions);
+        
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('commande/facture.html.twig', [
+            'title' => "Votre facture en pdf"
+        ]);
+        
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+        
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (force download)
+        $dompdf->stream("mypdf.pdf", [
+            "Attachment" => true
+        ]);
+    }
+    
 }    

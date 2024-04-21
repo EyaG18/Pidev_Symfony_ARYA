@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mode de Livraison{% endblock %}
+{% block style %}
+{{ parent() }}
+<style>
+   .form-control.form-control  {
+        width: 30px; /* Adjust the width as needed */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin: 0 auto; /* Center the box horizontally */
+        transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+       }
+       
+       .form-container:hover {
+        background-color: #e9e9e9; /* Change the background color on hover */
+       }
+</style>
+{% endblock %}
+
+{% block AabiElWest1 %}
+{% include "livraison/AjoutLivraison.html.twig" %}
+
+ {{ form_start(form) }}
+
+ <div class="form-container">
+    {{ form_row(form.livrable, {'attr': {'class': 'form-control'}}) }}
+
+    <button type="submit" class="btn btn-primary">Confirmer</button>
+ </div>
+
+
+ {{ form_end(form) }}
+
+{% endblock %}

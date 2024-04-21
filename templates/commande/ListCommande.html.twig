@@ -11,7 +11,6 @@
         <th>Date commande</th>
         <th>Livrable</th>
         <th>Status</th>
-     
         <th>Actions</th>
     </tr>
     {% for commande in com %}
@@ -22,18 +21,17 @@
         <td>{{ commande.dateCom|date('Y-m-d') }}</td>
         <td>{{ commande.livrable ? 'Oui' : 'Non' }}</td>
         <td>{{ commande.status }}</td>
-        
         <td>
             <a href="{{ path('Commande_update', {'id': commande.idCommande}) }}" class="btn btn-primary">Modifier</a>
-           
             <a href="{{ path('commande_delete', {'id': commande.idCommande}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')">Supprimer</a>
         </td>
     </tr>
     {% else %}
     <tr>
-        <td colspan="8">Aucun enregistrement trouvé</td>
+        <td colspan="7">Aucun enregistrement trouvé</td>
     </tr>
     {% endfor %}
 </table>
 
 {% endblock %}
+

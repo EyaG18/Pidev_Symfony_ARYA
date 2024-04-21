@@ -31,6 +31,13 @@ class Commande
      */
     private $reference;
 
+     /**
+     * @var float|null
+     *
+     * @ORM\Column(name="prix_total", type="float", nullable=true)
+     */
+    private $prixTotal;
+
     /**
      * @var \DateTime
      *
@@ -50,7 +57,7 @@ class Commande
      *
      * @ORM\Column(name="Status", type="string", length=255, nullable=false)
      */
-    private $status;
+    private $status= 'en attente';
 
     /**
      * @var Panier
@@ -71,6 +78,23 @@ class Commande
      * })
      */
     private $idUser;
+    /**
+ * @ORM\ManyToOne(targetEntity="Panier", inversedBy="commandes")
+ * @ORM\JoinColumn(name="Id_Panier", referencedColumnName="Id_Panier")
+ */
+private $panier;
+
+public function getPanier(): ?Panier
+{
+    return $this->panier;
+}
+
+public function setPanier(?Panier $panier): self
+{
+    $this->panier = $panier;
+
+    return $this;
+}
 
     public function getIdCommande(): ?int
     {
@@ -154,11 +178,23 @@ class Commande
 
         return $this;
     }
-   // Generate a random reference number
-   public function generateRandomReference(): void
-   {
-       // Generate a random integer between 100000 and 999999
-       $this->reference = random_int(10000, 99999);
-   }
+
+    public function getPrixTotal(): ?float
+    {
+        return $this->prixTotal;
+    }
+
+    public function setPrixTotal(Panier $panier): self
+    {
+        // Calculez le prix total en multipliant la quantité de produit dans le panier par son prix individuel
+        $totalPrice = $panier->getQuantiteparproduit() * $panier->getIdProduit()->getPrixp();
+        $this->prixTotal = $totalPrice;
+    
+        return $this;
+    }
+    
+    
+    
+   
 
 }

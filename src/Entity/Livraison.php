@@ -28,7 +28,7 @@ class Livraison
      *
      * @ORM\Column(name="Status_livraison", type="string", length=20, nullable=false)
      */
-    private $statusLivraison;
+    private $statusLivraison = 'en attente';
 
  /**
      * @var \DateTime
@@ -69,6 +69,12 @@ class Livraison
      */
     private $idCommande;
       
+         /**
+     * @var int|null
+     *
+     * @ORM\Column(name="Reference", type="integer", nullable=true)
+     */
+    private $reference;
 
 
     public function getIdLivraison(): ?int
@@ -136,5 +142,15 @@ class Livraison
         return $this;
     }
 
+    public function getReference(): ?int
+    {
+        return $this->reference;
+    }
 
+    public function setReference(?int $reference): self
+    {
+        $this->reference = $reference;
+
+        return $this;
+    }
 }

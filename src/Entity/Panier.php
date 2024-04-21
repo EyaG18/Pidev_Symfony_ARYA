@@ -90,5 +90,10 @@ class Panier
         return $this;
     }
 
+    public function getUser(): ?User
+{
+  return $this->idUser;
+}
+
 
 }
