@@ -8,6 +8,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
+
 
 class CommandeType extends AbstractType
 {
@@ -22,7 +24,9 @@ class CommandeType extends AbstractType
             'expanded' => false,
             'multiple' => false,
             'label' => 'Mode de livraison',
-            'attr' => ['class' => 'form-control'],
+            'attr' => ['class' => 'form-control'],'constraints' => [
+                new NotBlank(),
+            ],
         ])
         ->add('status', ChoiceType::class, [
             'choices' => [

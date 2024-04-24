@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Commande;
 use App\Entity\User;
-use App\Entity\Panier;
+use App\Entity\Livraison;
 use App\Form\CommandeType;
 use App\Repository\PanierRepository;
 use App\Repository\CommandeRepository;
@@ -126,8 +126,7 @@ public function showcommande($userId, Request $request, PanierRepository $panier
         'panierId' => $panierId,
         'commande' => $commande,
     ]);
-}
-#[Route('/commande/add/{panierId}', name: 'add_commande')]
+}#[Route('/commande/add/{panierId}', name: 'add_commande')]
 public function addCommande($panierId, Request $request, PanierRepository $panierRepository, EntityManagerInterface $entityManager): Response
 {
     // Retrieve the panier based on the provided panier ID
@@ -142,22 +141,19 @@ public function addCommande($panierId, Request $request, PanierRepository $panie
     // Create a new Commande entity
     $commande = new Commande();
 
-   // Create the form
-   $form = $this->createForm(CommandeType::class, $commande);
-   $form->remove('status');
+    // Create the form
+    $form = $this->createForm(CommandeType::class, $commande);
+    $form->remove('status');
+
     // Handle form submission
     $form->handleRequest($request);
-    
 
     if ($form->isSubmitted() && $form->isValid()) {
-       
         $livrable = $commande->isLivrable();
 
         if ($livrable === true) {
-            
             $commande->setLivrable(true);
         } else {
-           
             $commande->setLivrable(false);
         }
 
@@ -193,19 +189,58 @@ public function addCommande($panierId, Request $request, PanierRepository $panie
         // Persist the Commande entity
         $entityManager->persist($commande);
         $entityManager->flush();
-        
-            
-        // Redirect to a confirmation page or route
-        return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId]);
+
+        if ($commande->isLivrable()) {
+            // Create a new Livraison entity
+            $livraison = new Livraison();
+
+            // Set the reference
+            $commandeReference = $commande->getReference();
+            $livraison->setReference($commandeReference);
+
+            // Set the status
+            $livraison->setStatusLivraison('en attente');
+
+            // Set the price
+            $livraison->setPrixLivraison(8);
+
+            // Set the date
+            $commandeDate = $commande->getDateCom();
+            if ($commandeDate !== null) {
+                $livraisonDate = (new \DateTime($commandeDate->format('Y-m-d')))->modify('+2 days');
+                $livraison->setDateLivraison($livraisonDate);
+            } else {
+                $defaultLivraisonDate = new \DateTime();
+                $defaultLivraisonDate->modify('+2 days');
+                $livraison->setDateLivraison($defaultLivraisonDate);
+            }
+
+            // Set the User
+            $livraison->setIdUser($user);
+
+            // Set the Commande
+            $livraison->setIdCommande($commande);
+
+            // Persist the Livraison entity
+            $entityManager->persist($livraison);
+            $entityManager->flush();
+
+            // Redirect to the confirmation page
+            return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId]);
+        } else {
+            // Redirect to the confirmation page
+            return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId]);
+        }
     }
-    
+
     // Render the form
     return $this->render('commande/frontform.html.twig', [
         'form' => $form->createView(),
         'commande' => $commande,
-        'panier'=>$panier
+        'panier' => $panier
     ]);
 }
+
 
 #[Route('/confirmer/{panierId}', name: 'confirmer_commande')]
 public function confirmerCommande(PanierRepository $panierRepository, CommandeRepository $commandeRepository, $panierId): Response
