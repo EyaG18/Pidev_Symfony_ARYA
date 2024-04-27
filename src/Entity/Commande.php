@@ -181,9 +181,18 @@ public function setPanier(?Panier $panier): self
 
     public function getPrixTotal(): ?float
     {
-        return $this->prixTotal;
+        // Initialize total price
+        $totalPrice = 0;
+    
+        // Iterate over each item in the command's panier
+        foreach ($this->panier as $panierItem) {
+            // Calculate the total price for each item and accumulate it
+            $totalPrice += $panierItem->getQuantiteparproduit() * $panierItem->getIdProduit()->getPrixp();
+        }
+    
+        return $totalPrice;
     }
-
+    
     public function setPrixTotal(Panier $panier): self
     {
         // Calculez le prix total en multipliant la quantité de produit dans le panier par son prix individuel

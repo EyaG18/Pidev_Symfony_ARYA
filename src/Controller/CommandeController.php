@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Commande;
+use App\Entity\Panier;
 use App\Entity\User;
 use App\Entity\Livraison;
 use App\Form\CommandeType;
 use App\Repository\PanierRepository;
 use App\Repository\CommandeRepository;
+use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +19,11 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use App\Repository\UserRepository;
+
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -126,7 +133,10 @@ public function showcommande($userId, Request $request, PanierRepository $panier
         'panierId' => $panierId,
         'commande' => $commande,
     ]);
-}#[Route('/commande/add/{panierId}', name: 'add_commande')]
+}
+
+
+#[Route('/commande/add/{panierId}', name: 'add_commande')]
 public function addCommande($panierId, Request $request, PanierRepository $panierRepository, EntityManagerInterface $entityManager): Response
 {
     // Retrieve the panier based on the provided panier ID
@@ -226,7 +236,9 @@ public function addCommande($panierId, Request $request, PanierRepository $panie
             $entityManager->flush();
 
             // Redirect to the confirmation page
-            return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId]);
+            return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId,
+            'user' => $user
+        ]);
         } else {
             // Redirect to the confirmation page
             return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId]);
@@ -238,6 +250,7 @@ public function addCommande($panierId, Request $request, PanierRepository $panie
         'form' => $form->createView(),
         'commande' => $commande,
         'panier' => $panier
+    
     ]);
 }
 
@@ -307,33 +320,38 @@ public function displayUserCommands($userId, CommandeRepository $commandeReposit
         // Return success response
         return new JsonResponse(['message' => 'Command deleted successfully']);
     }
-    #[Route('/facture/{panierId}', name: 'facture')]
-    public function facture($panierId, PanierRepository $panierRepository, CommandeRepository $commandeRepository): Response
+
+    #[Route('/facture/{iduser}', name: 'facture')]
+    public function facture($iduser, PanierRepository $panierRepository): Response
     {
-        // Retrieve the panier associated with the provided panier ID
-        $panier = $panierRepository->find($panierId);
+        // Retrieve the panier associated with the provided user ID
+        $panier = $panierRepository->findBy(['idUser' => $iduser]);
     
         if (!$panier) {
             throw $this->createNotFoundException('Panier not found');
         }
     
-        // Retrieve the commande associated with the panier
-        $commande = $commandeRepository->findOneBy(['panier' => $panier]);
+        // Initialize total price
+        $totalPrice = 0;
     
-        if (!$commande) {
-            throw $this->createNotFoundException('Commande not found');
+        // Calculate the total price by summing up the prices of each product in the panier
+        foreach ($panier as $panierItem) {
+            $totalPrice += $panierItem->getQuantiteparproduit() * $panierItem->getIdProduit()->getPrixp();
         }
     
-        // Determine if the commande is livrable
-        $livrable = $commande->isLivrable();
-        $frais = $livrable ? 8.00 : 0;
+        // Determine if the panier is deliverable (assuming you have a method to check this)
+       // $livrable = $this->isLivrable($panier); // Implement this method as per your logic
+       // $frais = $livrable ? 8.00 : 0;
     
         return $this->render('commande/facture.html.twig', [
-            'commande' => $commande,
             'panier' => $panier,
-            'frais' => $frais
+            'totalPrice' => $totalPrice,
+            //'frais' => $frais
         ]);
     }
+    
+    
+
     
 
     #[Route('/facturepdf', name: 'facturepdf')]
@@ -367,4 +385,109 @@ public function displayUserCommands($userId, CommandeRepository $commandeReposit
         ]);
     }
     
+
+
+    /*
+    public function checkout(Panier $panier, StripeService $stripeService)
+    {
+        $stripeParams = []; // Add any additional Stripe parameters here
+
+        try {
+            $paymentIntent = $stripeService->stripe($stripeParams, $panier);
+            $clientSecret = $paymentIntent->client_secret;
+
+            // Pass $clientSecret to your frontend
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            // Handle payment errors gracefully
+        }
+    }*/
+
+ 
+    #[Route('/checkout/{userId}', name: 'checkout', methods: ['GET', 'POST'])]
+    public function checkout($userId, Request $request, PanierRepository $panierRepository, ProduitRepository $produitRepository): Response
+    {
+        // Set Stripe API key
+        Stripe::setApiKey('sk_test_51Oq3VTC4DfcX81jOg4IgEi0DJ88o63817Nf6dAFOFyj6G249vlbaCGEipesnC5cEIaCzsT3PD2j0SGXrkmzGNWUn00AqxMnm2A');
+    
+        // Retrieve the user based on the provided user ID
+        $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+    
+        // Check if the user exists
+        if (!$user) {
+            $this->addFlash('warning', 'Utilisateur non trouvé.');
+            // Redirect or handle the case where the user is not found
+        }
+    
+        // Retrieve the user's carts
+        $panier = $panierRepository->findBy(['idUser' => $userId]);
+    
+        // Check if there are carts found for the user
+        if (empty($panier)) {
+            $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'utilisateur fourni.');
+            // Redirect or handle the case where no carts are found
+        }
+    
+        // Initialize an empty line_items array
+        $lineItems = [];
+    
+        // Iterate through the user's cart items
+        foreach ($panier as $cartItem) {
+            // Get the product details from the cart item
+            $product = $produitRepository->find($cartItem->getIdProduit());
+            $productName = $product->getNomp();
+            $productPrice = $product->getPrixp();
+            $productQuantity = $cartItem->getQuantiteparproduit();
+    
+            $conversionRate = 3.15;
+            // Create a line_item for each product in the cart
+            $lineItem = [
+                'price_data' => [
+                    'currency' => 'usd',
+                    'product_data' => [
+                        'name' => $productName,
+                    ],
+                    'unit_amount' => $productPrice , 
+                ],
+                'quantity' => $productQuantity,
+            ];
+    
+            // Add the line_item to the line_items array
+            $lineItems[] = $lineItem;
+        }
+    
+        // Calculate the total price
+        $totalPrice = 0;
+        foreach ($lineItems as $lineItem) {
+            $productPriceTnd = $lineItem['price_data']['unit_amount'] / 100 * $conversionRate;
+            $lineItem['price_data']['unit_amount'] = $productPriceTnd * 100; // Convert back to cents
+        }
+    
+        // Create the Stripe session
+        $session = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => $lineItems,
+            'mode' => 'payment',
+            'success_url' => $this->generateUrl('success_url', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'cancel_url' => $this->generateUrl('cancel_url', [], UrlGeneratorInterface::ABSOLUTE_URL),
+        ]);
+    
+        // Redirect to the Stripe checkout page
+        return $this->redirect($session->url, 303);
+    }
+    
+
+
+    #[Route('/success-url', name: 'success_url')]
+    public function successUrl(): Response
+    {
+        return $this->render('commande/confirmation.html.twig', []);
+    }
+
+
+    #[Route('/cancel-url', name: 'cancel_url')]
+    public function cancelUrl(): Response
+    {
+        return $this->render('commande/cancel.html.twig', []);
+    }
+
 }    

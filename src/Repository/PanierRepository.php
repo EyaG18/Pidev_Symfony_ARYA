@@ -18,16 +18,8 @@ class PanierRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-
-          /**
-     * Extracts data from Panier objects for rendering in Twig template.
-     *
-     * @param Panier[] $paniers
-     * @return array
-     */
         parent::__construct($registry, Panier::class);
     }
-    
 
 //    /**
 //     * @return Panier[] Returns an array of Panier objects
@@ -53,20 +45,4 @@ class PanierRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
-public function extractDataForTwig(array $paniers): array
-{
-    $extractedData = [];
-
-    foreach ($paniers as $panier) {
-        $productDetails = [
-            'productName' => $panier->getIdProduit()->getNomProduit(),
-            'quantity' => $panier->getQuantiteparproduit(),
-            'price' => $panier->getIdProduit()->getPrixProduit(),
-        ];
-
-        $extractedData[] = $productDetails;
-    }
-
-    return $extractedData;
-}
 }

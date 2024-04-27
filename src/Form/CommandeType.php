@@ -24,9 +24,8 @@ class CommandeType extends AbstractType
             'expanded' => false,
             'multiple' => false,
             'label' => 'Mode de livraison',
-            'attr' => ['class' => 'form-control'],'constraints' => [
-                new NotBlank(),
-            ],
+            'attr' => ['class' => 'form-control']
+            
         ])
         ->add('status', ChoiceType::class, [
             'choices' => [
