@@ -87,28 +87,25 @@
 
 
 							<div class="form-group">
-								{{ form_label(form.note) }}
-								{{ form_widget(form.note, { 'attr': {'class': 'form-control'} }) }}
-								{% if form_errors(form.note) %}
-									<div class="invalid-feedback">{{ form_errors(form.note) }}</div>
-								{% endif %}
+								{{ form_label(form.note,"note") }}
+								{{ form_errors(form.note) }}
+								{{ form_widget(form.note, {'attr': {'class': 'form-control'}}) }}
 							</div>
 
-							<div class="form-group">
-								{{ form_label(form.commentaire) }}
-								{{ form_widget(form.commentaire, { 'attr': {'class': 'form-control','cols': 150} }) }}
-								{% if form_errors(form.commentaire) %}
-									<div class="invalid-feedback">{{ form_errors(form.commentaire) }}</div>
-								{% endif %}
-							</div>
 
-							<button type="submit" class="btn btn-primary">Save</button>
-							<a href="{{ path('app_test') }}" class="btn btn-secondary">Cancel</a>
-							{{ form_end(form) }}
 						</div>
+						<div class="form-group">
+							{{ form_label(form.commentaire,"commentaire") }}
+							{{ form_errors(form.commentaire) }}
+							{{ form_widget(form.commentaire, {'attr': {'class': 'form-control'}}) }}
+						</div>
+
+						<button type="submit" class="btn btn-primary">Save</button>
+						<a href="{{ path('app_test') }}" class="btn btn-secondary">Cancel</a>
+						{{ form_end(form) }}
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-{% endblock %}
+</div>{% endblock %}

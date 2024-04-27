@@ -2,37 +2,37 @@
 
 {% block stylesheets %}
 	{{ parent() }}
-
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
 	<style>
-		.wrapper {
-			display: grid;
-			grid-template-columns: repeat(4, 1fr);
-			grid-gap: 30px;
-		}
-		.product-item {
-			background-color: #F0F8FF;
+		.product-container {
+			display: flex;
+			align-items: flex-start;
+			justify-content: center;
+			background-color: white;
 			padding: 20px;
 			border-radius: 10px;
-			text-align: center;
-			border: 2px solid black;
-			margin-left: 20px;
-			margin-right: 20px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+			max-width: 600px;
+			margin: 0 auto;
 		}
-		.product-item img {
-			max-width: 100%;
-			height: auto;
+		.product-image {
+			max-width: 50%;
 		}
-		.product-details {
-			background-color: #F0F8FF;
-			padding: 20px;
-			border-radius: 10px;
-			text-align: center;
-			border: 2px solid black;
+		.details-container {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
 			margin-left: 20px;
-			margin-right: 20px;
 		}
 		.product-price {
 			font-weight: bold;
+		}
+		.add-to-cart,
+		.continue-shopping {
+			margin-top: 10px;
+			width: 100%;
+			text-align: center;
 		}
 		.add-to-cart {
 			background-color: #ff69b4;
@@ -45,6 +45,18 @@
 		.add-to-cart:hover {
 			background-color: #ff3385;
 		}
+		.continue-shopping {
+			background-color: transparent;
+			color: #333;
+			border: none;
+			padding: 10px 20px;
+			border-radius: 20px;
+			cursor: pointer;
+			text-decoration: underline;
+		}
+		.continue-shopping:hover {
+			background-color: transparent;
+		}
 		.spinner {
 			border: 4px solid rgba(0, 0, 0, 0.1);
 			border-top: 4px solid #ff69b4;
@@ -52,6 +64,10 @@
 			width: 20px;
 			height: 20px;
 			animation: spin 1s linear infinite;
+			margin-left: 10px;
+		}
+		.reviews {
+			color: #f9d71c;
 		}
 
 		@keyframes spin {
@@ -62,24 +78,84 @@
 				transform: rotate(360deg);
 			}
 		}
+
+		/****************************************************************partie Avis css****************************/
+
+
+		.rating-box {
+			position: relative;
+			background: #fff;
+			padding: 25px 50px 35px;
+			border-radius: 25px;
+			box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+		}
+		.rating-box header {
+			font-size: 22px;
+			color: #dadada;
+			font-weight: 500;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+		.rating-box .stars {
+			display: flex;
+			align-items: center;
+			gap: 25px;
+		}
+		.stars i {
+			color: #e6e6e6;
+			font-size: 35px;
+			cursor: pointer;
+			transition: color 0.2s ease;
+		}
 	</style>
 {% endblock %}
+{% block javascripts %}
+	<script></script>
+{% endblock %}
+
 
 {% block AabiElWest1 %}
 	<div class="fashion_section">
 		<div class="background-colour">
 			<div class="wrapper">
-				<div class="product-details">
-					<img class="product-image" src="{{ asset('uploadsProduit/' ~ product.ImageP) }}" alt="Image du produit">
-					<h3>{{ product.NomP }}</h3>
-					<p class="product-price">Prix :
-						{{ product.PrixP }}
-						DT</p>
+				<h1></h1>
+				<h1></h1>
+				<h1></h1>
+				<div class="product-container">
 
-					<input type="number" min="1" value="1" id="quantity">
 
-					<button class="add-to-cart">Ajouter au panier</button>
-					<div class="spinner"></div>
+					<img class="product-image" src="{{ asset('images/robetest.jpg') }}" alt="Image du produit">
+					<div class="details-container">
+						<h2 class="product-title">{{ product.NomP }}</h2>
+						<p class="product-price">Prix :
+							{{ product.PrixP }}
+							DT</p>
+						<input
+						type="number" min="1" value="1" id="quantity" style="width: 100%; ">
+
+						<!--- yasmine -->
+						<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"/>
+
+						<div class="rating-box">
+							<header>How was your experience?</header>
+							<div class="stars">
+								<i class="fa-solid fa-star"></i>
+								<i class="fa-solid fa-star"></i>
+								<i class="fa-solid fa-star"></i>
+								<i class="fa-solid fa-star"></i>
+								<i class="fa-solid fa-star"></i>
+							</div>
+						</div>
+
+
+						<!----- fin yasmine -->
+						<button class="add-to-cart">Ajouter au panier</button>
+						<div class="spinner"></div>
+						<a href="{{ path('showProduitFront') }}" class="continue-shopping btn btn-primary">
+							<i class="fa fa-arrow-left"></i>
+							Continuer mes achats</a>
+
+					</div>
 				</div>
 			</div>
 		</div>

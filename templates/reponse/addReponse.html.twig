@@ -79,7 +79,7 @@
 				<h6 class="m-0 font-weight-bold text-primary">Liste des Reclamation</h6>
 			</div>
 			<div class="card-body">
-				<h5 class="title text-center mb-3">Ajouter Une Réservation</h5>
+				<h5 class="title text-center mb-3">Ajouter Une Réponse</h5>
 				{# Ajouter la classe text-center pour centrer le texte #}
 				<div class="form-group">
 					{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}
@@ -92,13 +92,10 @@
 
 
 					<div class="form-group">
-						{{ form_label(form.reponse) }}
-						{{ form_widget(form.reponse, { 'attr': {'class': 'form-control'} }) }}
-						{% if form_errors(form.reponse) %}
-							<div class="invalid-feedback">{{ form_errors(form.reponse) }}</div>
-						{% endif %}
+						{{ form_label(form.reponse,"reponse") }}
+						{{ form_errors(form.reponse) }}
+						{{ form_widget(form.reponse, {'attr': {'class': 'form-control'}}) }}
 					</div>
-
 
 					<button type="submit" class="btn btn-primary">Save</button>
 					<a href="{{ path('app_consulterReclamationBack') }}" class="btn btn-secondary">Cancel</a>

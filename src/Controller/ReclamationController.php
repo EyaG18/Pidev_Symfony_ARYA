@@ -15,7 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use App\Form\ReclamationType;
 
 class ReclamationController extends AbstractController
-{
+{  
     #[Route('/reclamation', name: 'app_reclamation')]
     public function index(): Response
     {
@@ -42,9 +42,9 @@ class ReclamationController extends AbstractController
             $em->flush();
             return $this->render('baseFront.html.twig');
         }
-        $errors = $form->getErrors(true, false);
 
-        return $this->render('reclamation/addreclamation.html.twig', ['form' => $form->createView(), 'errors' => $errors]);
+
+        return $this->render('reclamation/addreclamation.html.twig', ['form' => $form->createView()]);
     }
     #[Route('/consulterReclamation/{id_c}', name: 'app_consulterReclamation')]
     function afficherReclamationFront(ManagerRegistry $emm, $id_c)
@@ -65,6 +65,7 @@ class ReclamationController extends AbstractController
         $reclamation = $emm->getRepository(Reclamation::class)->find($id_r);
         $em->remove($reclamation);
         $em->flush();
+        $this->addFlash('success', 'La reclamation a été supprimé avec succès.');
         return $this->redirectToRoute('app_test');
     }
     #[Route('/editReclamation/{ref}', name: 'app_editReclamation')]

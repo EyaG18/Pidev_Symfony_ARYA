@@ -12,17 +12,34 @@
 			grid-gap: 30px;
 		}
 		.product-item {
-			background-color: #F0F8FF;
+			background-color: #ffffff;
 			padding: 20px;
 			border-radius: 10px;
 			text-align: center;
-			border: 2px solid black;
-			margin-left: 20px; /* Ajoutez la marge à gauche */
-			margin-right: 20px; /* Ajoutez la marge à droite */
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			transition: transform 0.3s ease-in-out;
+			margin-left: 20px;
+			margin-right: 20px;
+		}
+		.product-item a {
+			display: inline-block;
+			background-color: #ff69b4;
+			padding: 10px 20px;
+			border-radius: 20px;
+			color: white;
+			text-decoration: none;
+		}
+		.product-item:hover {
+			transform: translateY(-5px);
 		}
 		.product-item img {
 			max-width: 125%;
-			height: auto;
+			height: 125%;
+		}
+		.product-price {
+			font-size: 24px;
+			color: #333;
+			margin-bottom: 15px;
 		}
 		.product-item a {
 			display: inline-block;
@@ -41,21 +58,45 @@
 			height: 100vh;
 			position: relative;
 		}
+		.add-to-cart {
+			background-color: #ff69b4;
+			color: white;
+			border: none;
+			padding: 10px 20px;
+			border-radius: 20px;
+			cursor: pointer;
+		}
+		.add-to-cart:hover {
+			background-color: #ff3385;
+		}
+		.spinner {
+			border: 4px solid rgba(0, 0, 0, 0.1);
+			border-top: 4px solid #ff69b4;
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			animation: spin 1s linear infinite;
+		}
+
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
 	</style>
 {% endblock %}
 
 
 {% block AabiElWest1 %}
-
-
 	<div class="fashion_section">
 		<div class="background-colour">
 			<div class="wrapper">
 				{% for product in prod %}
 					<div class="product-item ">
-
-
-						<img src="{{ asset('uploadsProduit/' ~ product.ImageP) }}" alt="Image du produit" style="max-width: 100px; max-height: 100px;">
+						<img src="{{ asset('images/robetest.jpg') }}" alt="Image du produit" style="max-width: 100px; max-height: 100px;">
 						<h3>{{ product.NomP }}</h3>
 						<p>Prix :
 							{{ product.PrixP }}
@@ -63,13 +104,16 @@
 
 						<a class="product-button" href="{{ path('product_details', {'idp': product.Id_Produit}) }}">Consulter</a>
 						<a class="product-button" href="{{ path('app_addAvis', {'idp': product.Id_Produit}) }}">Avis</a>
-						<a class="product-button" href="{{ path('app_consulterAvisFront') }}">consulterAvis</a>
 
+						<a class="product-button" href="{{ path('product_details', {'idp': product.Id_Produit}) }}">Consulter</a>
 						<!-- Ajoutez ici le spinner pour la quantité -->
 						<!-- Ajoutez ici le bouton "Ajouter au panier" -->
+
 					</div>
 				{% endfor %}
+
+
 			</div>
-		</div>
-	</div>
-{% endblock %}
+
+
+		{% endblock %}
