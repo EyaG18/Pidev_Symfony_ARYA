@@ -23,11 +23,10 @@ use App\Repository\UserRepository;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
+use Knp\Component\Pager\PaginatorInterface; // Corrected import
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
-
 
 class CommandeController extends AbstractController
 {
@@ -39,14 +38,24 @@ class CommandeController extends AbstractController
         ]);
     }
 
-
-
     #[Route('/commandes', name: 'afficher_commande')]
-    public function affichCommande(CommandeRepository $repo): Response
+    public function affichCommande(CommandeRepository $repo, PaginatorInterface $paginator, Request $request): Response
     {
+        // Retrieve all commands
         $commandes = $repo->findAll();
-        return $this->render('commande/ListCommande.html.twig', ['com' => $commandes]);
+        
+        // Paginate the results
+        $pagination = $paginator->paginate(
+            $commandes, // Query results
+            $request->query->getInt('page', 1), // Current page number, default 1
+            6// Number of items per page
+        );
+    
+        return $this->render('commande/ListCommande.html.twig', [
+            'pagination' => $pagination, 'com' => $commandes,
+        ]);
     }
+
 
     #[Route('/update/{id}', name: 'Commande_update', methods: ['GET', 'POST'])]
 public function edit(Request $request, CommandeRepository $commandeRepository, $id, EntityManagerInterface $entityManager): Response

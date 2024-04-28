@@ -17,19 +17,20 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: Object.keys(statuses),
+                labels: Object.keys(statuses).map(String), // Convert keys to strings
                 datasets: [{
                     label: 'Nombre de livraisons par statut',
                     data: Object.values(statuses),
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    backgroundColor: 'rgb(238, 187, 223)',
                     borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
+                    borderWidth: 2
                 }]
             },
             options: {
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        stepSize: 3// Ensure only integers are displayed on the y-axis
                     }
                 }
             }
@@ -37,15 +38,16 @@
     </script>
 {% endblock %}
 
+
 {% block AabiElWest %}
 <div class="container-fluid">
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <div>
-            <h6 class="m-0 font-weight-bold text-primary">État des Livraisons par Statut</h6>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">État des Livraisons par Statut</h6>
+            </div>
         </div>
+        <canvas id="myChart" width="400" height="100"></canvas>
     </div>
-    <canvas id="myChart" width="400" height="100"></canvas>
-   </div>
 </div>
 {% endblock %}
