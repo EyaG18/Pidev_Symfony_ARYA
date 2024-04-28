@@ -137,4 +137,48 @@ class LivraisonController extends AbstractController
         $this->addFlash('error', 'La commande associée n\'est pas livrable.');
         return $this->redirectToRoute('app_livraison');
     }
-}}
+}
+
+#[Route('/stat', name: 'statLiv')]
+
+public function StatLivraisons(LivraisonRepository $livraisonRepository): Response
+{
+    // Récupération de toutes les livraisons
+    $livraisons = $livraisonRepository->findAll();
+
+    // Initialisation des tableaux pour les statistiques
+    $statuses = [];
+    
+    // Parcours des livraisons
+    foreach ($livraisons as $livraison) {
+        // Récupération du statut de livraison
+        $status = $livraison->getStatusLivraison();
+        
+        // Ajout du statut au tableau (si il n'existe pas déjà)
+        if (!isset($statuses[$status])) {
+            $statuses[$status] = 0;
+        }
+        
+        // Incrémentation du compteur pour le statut de livraison
+        $statuses[$status]++;
+    }
+    
+    return $this->render('livraison/chartJSLiv.html.twig', [
+        'statuses' => $statuses,
+    ]);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

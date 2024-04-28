@@ -468,13 +468,14 @@ public function displayUserCommands($userId, CommandeRepository $commandeReposit
             'line_items' => $lineItems,
             'mode' => 'payment',
             'success_url' => $this->generateUrl('success_url', [], UrlGeneratorInterface::ABSOLUTE_URL),
-            'cancel_url' => $this->generateUrl('cancel_url', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
     
         // Redirect to the Stripe checkout page
         return $this->redirect($session->url, 303);
     }
     
+
+
 
 
     #[Route('/success-url', name: 'success_url')]
@@ -484,10 +485,6 @@ public function displayUserCommands($userId, CommandeRepository $commandeReposit
     }
 
 
-    #[Route('/cancel-url', name: 'cancel_url')]
-    public function cancelUrl(): Response
-    {
-        return $this->render('commande/cancel.html.twig', []);
-    }
+
 
 }    

@@ -116,27 +116,26 @@
         }
     </style>
 {% endblock %}
-
 {% block AabiElWest1 %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                {# Form goes here #}
-                {% include "livraison/AjoutLivraison.html.twig" %}
-                {{ form_start(form) }}
-                <div class="form-container">
-                    {{ form_row(form.livrable, {'attr': {'class': 'form-control'}}) }}
-                </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        {# Form goes here #}
+        {% include "livraison/AjoutLivraison.html.twig" %}
 
-                {{ form_end(form) }}
-                <form action="/checkout" method="POST">
-                  <button type="submit" class="btn btn-primary btn-lg">Checkout</button>
-              </form>
+        {{ form_start(form) }}
+          <div class="form-container">
+            {{ form_row(form.livrable, {'attr': {'class': 'form-control'}}) }}
+          </div>
 
-            </div>
-                       <button type="submit" class="btn btn-primary" >Retour</button>
-        </div>
-    </div>     
+          {{ form_end(form) }}
 
-    
+          <form action="{{ path('checkout', {'userId': userId }) }}" method="POST">
+            <button type="submit" class="btn btn-primary btn-lg">Checkout</button>
+          </form>
+
+        <button type="submit" class="btn btn-primary">Retour</button>
+      </div>
+    </div>
+  </div>
 {% endblock %}
