@@ -19,10 +19,10 @@
             data: {
                 labels: Object.keys(statuses).map(String), // Convert keys to strings
                 datasets: [{
-                    label: 'Nombre de livraisons par statut',
+                    label: 'Nombre de commandes par statut',
                     data: Object.values(statuses),
-                    backgroundColor: 'rgb(238, 187, 223)',
-                    borderColor: 'rgb(201, 141, 184)',
+                    backgroundColor: ['rgb(238, 187, 223)', 'rgb(144, 207, 233)', 'rgb(255, 180, 150)'],
+                    borderColor: ['rgb(201, 141, 184)', 'rgb(62, 143, 198)', 'rgb(245, 140, 119)'],
                     borderWidth: 2
                 }]
             },
@@ -30,7 +30,7 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        stepSize: 3// Ensure only integers are displayed on the y-axis
+                        stepSize: 1 // Ensure only integers are displayed on the y-axis
                     }
                 }
             }
@@ -44,7 +44,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <div>
-                <h6 class="m-0 font-weight-bold text-primary">État des Livraisons par Statut</h6>
+                <h6 class="m-0 font-weight-bold text-primary">État des Commandes par Statut</h6>
             </div>
         </div>
         <canvas id="myChart" width="400" height="100"></canvas>

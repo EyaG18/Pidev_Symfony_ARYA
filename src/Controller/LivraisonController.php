@@ -13,6 +13,8 @@ use App\Entity\Livraison;
 use App\Entity\User;
 use App\Entity\Panier;
 use App\Entity\Commande;
+use Knp\Component\Pager\PaginatorInterface; 
+
 
 
 class LivraisonController extends AbstractController
@@ -27,10 +29,16 @@ class LivraisonController extends AbstractController
 
 
     #[Route('/livraisons', name: 'afficher_livraison')]
-    public function affichlivraison(LivraisonRepository $repo): Response
+    public function affichlivraison(LivraisonRepository $repo,PaginatorInterface $paginator, Request $request ): Response
     {
         $livraisons = $repo->findAll();
-        return $this->render('livraison/ListLivraison.html.twig', ['liv' => $livraisons]);
+           // Paginate the results
+           $pagination = $paginator->paginate(
+            $livraisons, // Query results
+            $request->query->getInt('page', 1), // Current page number, default 1
+            6// Number of items per page
+        );
+        return $this->render('livraison/ListLivraison.html.twig', ['pagination' => $pagination,'liv' => $livraisons]);
     }
 
 
@@ -91,24 +99,20 @@ class LivraisonController extends AbstractController
         #[Route('/livraison/add/{commandeId}', name: 'livraison_add')]
         public function addLivraison(Request $request, $commandeId, EntityManagerInterface $entityManager)
         {
-    // Retrieve the Commande based on the provided ID
     $commande = $entityManager->getRepository(Commande::class)->find($commandeId);
 
     if ($commande->isLivrable()) {
-        // Create a new Livraison entity
         $livraison = new Livraison();
 
-        // Set the reference
+        
         $commandeReference = $commande->getReference();
         $livraison->setReference($commandeReference);
 
-        // Set the status
         $livraison->setStatusLivraison('en attente');
 
-        // Set the price
         $livraison->setPrixLivraison(8);
 
-        // Set the date
+     
         $commandeDate = $commande->getDateCom();
         if ($commandeDate !== null) {
             $livraisonDate = (new \DateTime($commandeDate->format('Y-m-d')))->modify('+2 days');
@@ -119,21 +123,17 @@ class LivraisonController extends AbstractController
             $livraison->setDateLivraison($defaultLivraisonDate);
         }
 
-        // Set the User
         $user = $commande->getIdUser();
         $livraison->setIdUser($user);
 
-        // Set the Commande
         $livraison->setIdCommande($commande);
 
-        // Persist the Livraison entity
         $entityManager->persist($livraison);
         $entityManager->flush();
 
-        // Redirect to a route or return a response
+      
         return $this->redirectToRoute('commande/confirmation.html.twig');
     } else {
-        // Handle the case where the Commande is not livrable
         $this->addFlash('error', 'La commande associée n\'est pas livrable.');
         return $this->redirectToRoute('app_livraison');
     }
@@ -143,23 +143,20 @@ class LivraisonController extends AbstractController
 
 public function StatLivraisons(LivraisonRepository $livraisonRepository): Response
 {
-    // Récupération de toutes les livraisons
+    
     $livraisons = $livraisonRepository->findAll();
 
-    // Initialisation des tableaux pour les statistiques
+   
     $statuses = [];
     
-    // Parcours des livraisons
+   
     foreach ($livraisons as $livraison) {
-        // Récupération du statut de livraison
         $status = $livraison->getStatusLivraison();
         
-        // Ajout du statut au tableau (si il n'existe pas déjà)
         if (!isset($statuses[$status])) {
             $statuses[$status] = 0;
         }
         
-        // Incrémentation du compteur pour le statut de livraison
         $statuses[$status]++;
     }
     

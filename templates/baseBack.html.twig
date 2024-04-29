@@ -137,9 +137,9 @@
   <div id="collapseStatisqtiques" class="collapse" aria-labelledby="headingStatistiques" data-parent="#accordionSidebar">
     <div class="bg-white py-2 collapse-inner rounded">
       <a class="collapse-item" href="#">Etat du Stock</a>
-      <a class="collapse-item" href="stat">Etat des livraison </a>
-      <a class="collapse-item" href="#">Zomara 2</a>
-      <a class="collapse-item" href="#">Zomara 3</a>
+      <a class="collapse-item" href="statcommande">Etat des Commandes</a>
+      <a class="collapse-item" href="stat">Etat des livraisons </a>
+      <a class="collapse-item" href="#">Etats X</a>
       <a class="collapse-item" href="#">Njmou nzidou kad mnhebou</a>
   
     </div>
@@ -187,14 +187,15 @@
           <!-- Topbar Search -->
           <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
             <div class="input-group">
-              <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+              <input id="searchInput" type="text" class="form-control bg-light border-0 small" placeholder="Rechercher une commande ..." aria-label="Search" aria-describedby="basic-addon2">
               <div class="input-group-append">
-                <button class="btn btn-primary" type="button">
+                <button id="searchButton" class="btn btn-primary" type="button">
                   <i class="fas fa-search fa-sm"></i>
                 </button>
               </div>
             </div>
           </form>
+          
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
@@ -450,3 +451,30 @@
 </body>
 
 </html>
+<script>
+  $(document).ready(function() {
+      // Initialize DataTable with search functionality
+      $('#commandeTable').DataTable({
+          "language": {
+              "search": "_INPUT_", // Search input placeholder
+              "searchPlaceholder": "Rechercher une commande ..." // Search input label
+          }
+      });
+
+      // Handle search button click event
+      $('#searchButton').click(function() {
+          var searchTerm = $('#searchInput').val();
+          $('#commandeTable').DataTable().search(searchTerm).draw();
+      });
+
+      // Handle enter key press event in the search input field
+      $('#searchInput').keypress(function(e) {
+          if (e.which === 13) {
+              e.preventDefault();
+              var searchTerm = $('#searchInput').val();
+              $('#commandeTable').DataTable().search(searchTerm).draw();
+          }
+      });
+  });
+</script>
+
