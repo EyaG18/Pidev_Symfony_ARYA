@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Commande;
-use App\Entity\Panier;
 use App\Entity\User;
 use App\Entity\Livraison;
 use App\Form\CommandeType;
@@ -26,23 +25,47 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use App\Entity\Notification;
+use App\Entity\Avis;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Entity\Catégorie;
+use App\Entity\Produit;
+use Symfony\Component\Mailer\Exception\TransportException;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Twig\Environment;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport;
+
 
 class CommandeController extends AbstractController
 {
-    #[Route('/commande', name: 'app_commande')]
+    /*#[Route('/commande', name: 'app_commande')]
     public function index(): Response
     {
         return $this->render('commande/index.html.twig', [
             'controller_name' => 'CommandeController',
+            'cate' => $listCategories,
         ]);
-    }
+    }*/
 
     #[Route('/commandes', name: 'afficher_commande')]
-    public function affichCommande(CommandeRepository $repo, PaginatorInterface $paginator, Request $request): Response
+    public function affichCommande(CommandeRepository $repo, PaginatorInterface $paginator, Request $request, ManagerRegistry $emm, PanierRepository $panierRepository): Response
     {
+        
+        
+        $criteria = ['type' => 'reclamation'];
+        $notification = $emm->getRepository(Notification::class)->findBy($criteria);
+        $criteria2 = ['type' => 'avis'];
+        $notification2 = $emm->getRepository(Notification::class)->findBy($criteria2);
+        $n = $emm->getRepository(Notification::class)->count([]);
         // Retrieve all commands
         $commandes = $repo->findAll();
-        
+         // Call verifierproduit method
+         $this->verifierproduit($repo, $panierRepository);
         // Paginate the results
         $pagination = $paginator->paginate(
             $commandes, // Query results
@@ -51,38 +74,55 @@ class CommandeController extends AbstractController
         );
     
         return $this->render('commande/ListCommande.html.twig', [
-            'pagination' => $pagination, 'com' => $commandes,
+            'pagination' => $pagination, 'com' => $commandes,  'notifR' => $notification,'n' => $n ,'notifA' => $notification2
         ]);
     }
 
 
-    #[Route('/update/{id}', name: 'Commande_update', methods: ['GET', 'POST'])]
-public function edit(Request $request, CommandeRepository $commandeRepository, $id, EntityManagerInterface $entityManager): Response
-{
-    $commande = $commandeRepository->find($id);
-
-    if (!$commande) {
-        throw $this->createNotFoundException('Aucun commande trouvé pour cet ID: ' . $id);
+    #[Route('/commande/update/{id}', name: 'Commande_update', methods: ['GET', 'POST'])]
+    public function editCommande(Request $request, CommandeRepository $commandeRepository, $id, EntityManagerInterface $entityManager, ManagerRegistry $emm): Response
+    {
+        $criteria = ['type' => 'reclamation'];
+        $notification = $emm->getRepository(Notification::class)->findBy($criteria);
+        $criteria2 = ['type' => 'avis'];
+        $notification2 = $emm->getRepository(Notification::class)->findBy($criteria2);
+        $n = $emm->getRepository(Notification::class)->count([]);
+        
+        // Retrieve the Commande entity to edit based on the identifier
+        $commande = $commandeRepository->find($id);
+    
+        // Check if the Commande entity exists
+        if (!$commande) {
+            throw $this->createNotFoundException('No Commande found for ID: ' . $id);
+        }
+    
+        // Create the Commande form, excluding user-related fields
+        $form = $this->createForm(CommandeType::class, $commande);
+    
+        // Handle form submission
+        $form->handleRequest($request);
+    
+        // Check if the form is submitted and valid
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Save the changes to the database
+            $entityManager->flush();
+    
+            // Redirect to the page showing all Commandes after the update
+            return $this->redirectToRoute('afficher_commande');
+        }
+    
+        return $this->renderForm('commande/editcommande.html.twig', [
+            'commande' => $commande,
+            'form' => $form,
+            'notifR' => $notification, 'n' => $n, 'notifA' => $notification2
+        ]);
     }
-
-    // Exclude user-related fields from the form (adjust field names as needed)
-    $form = $this->createForm(CommandeType::class, $commande);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->flush();
-
-        return $this->redirectToRoute('afficher_commande', [], Response::HTTP_SEE_OTHER);
-    }
-
-    return $this->renderForm('commande/editcommande.html.twig', [
-        'commande' => $commande,
-        'form' => $form,
-    ]);
-}
+    
 
 #[Route('/commande/delete/{id}', name: 'commande_delete')]
 public function deleteCommande($id, CommandeRepository $commandeRepository, EntityManagerInterface $entityManager): Response
 {
+
     $commande = $commandeRepository->find($id);
 
     if (!$commande) {
@@ -101,17 +141,22 @@ public function deleteCommande($id, CommandeRepository $commandeRepository, Enti
 
 
 
-//Touskié front 
-#[Route('/commande/show/{userId}', name: 'show_commande')]
-public function showcommande($userId, Request $request, PanierRepository $panierRepository,CommandeRepository $commandeRepository): Response
+//Touskié front  : hedheya baad ena fl panier nnzel commander ena naayet llfonction hedhi
+#[Route('/Commander', name: 'show_commande')]
+public function showcommande(Request $request, PanierRepository $panierRepository,CommandeRepository $commandeRepository , SessionInterface $session
+): Response
 {
-    $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+    //$user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+    $user = $this->getUser();
+    $em = $this->getDoctrine()->getManager();
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
+
 
     if (!$user) {
         $this->addFlash('warning', 'Utilisateur non trouvé.');
     }
 
-    $panier = $panierRepository->findBy(['idUser' => $userId]);
+    $panier = $panierRepository->findBy(['id_user' => $user]);
 
     if (empty($panier)) {
         $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'utilisateur fourni.');
@@ -127,31 +172,39 @@ public function showcommande($userId, Request $request, PanierRepository $panier
            $commande = $commandeRepository->findOneBy(['idPanier' => $panierId]);
        }
 
+     
+
     return $this->render('commande/AjoutCommande.html.twig', [
         'user' => $user,
         'panier' => $panier,
         'panierId' => $panierId,
         'commande' => $commande,
+        'cate' => $listCategories,
+        
     ]);
 }
-
-
-#[Route('/commande/{userId}', name: 'add_commande')]
-public function addCommande($idUser, $panierId,Request $request, PanierRepository $panierRepository, EntityManagerInterface $entityManager): Response
+#[Route('/commande/add/{panierId}', name: 'add_commande')]
+public function addCommande($panierId, Request $request, PanierRepository $panierRepository, EntityManagerInterface $entityManager): Response
 {
-   $panier = $panierRepository->find($panierId);
-   $user = $this->getDoctrine()->getRepository(User::class)->find($idUser);
- 
+    $em = $this->getDoctrine()->getManager();
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
+    // Retrieve the panier based on the provided panier ID
+    $panier = $panierRepository->find($panierId);
+
+    // Check if the panier exists
     if (!$panier) {
         $this->addFlash('warning', 'Panier non trouvé.');
         return $this->redirectToRoute('app_livraison');
     }
 
+    // Create a new Commande entity
     $commande = new Commande();
 
+    // Create the form
     $form = $this->createForm(CommandeType::class, $commande);
     $form->remove('status');
 
+    // Handle form submission
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
@@ -163,45 +216,54 @@ public function addCommande($idUser, $panierId,Request $request, PanierRepositor
             $commande->setLivrable(false);
         }
 
+        // Set the Panier
         $commande->setPanier($panier);
 
+        // Set the current date and time
         $commande->setDateCom(new \DateTime());
 
+        // Generate a random reference number
         $randomReference = random_int(100000, 999999);
         $commande->setReference($randomReference);
 
+        // Set the total price
         $commande->setPrixTotal($panier);
 
-        $user = $panier->getUser();
+        // Retrieve the user from the panier (assuming Panier has a getUser method)
+        $user = $panier->getIdUser();
 
+        // Check if user is retrieved from panier
         if (!$user) {
             throw new \Exception('Failed to retrieve User from Panier');
         }
 
-     
+        // Set the user for the Commande
         $commande->setIdUser($user);
 
-    
+        // Ensure both panier and user are set before persisting
         if ($commande->getPanier() === null || $commande->getIdUser() === null) {
             throw new \Exception('Panier and User cannot be null for Commande creation');
         }
 
-    
+        // Persist the Commande entity
         $entityManager->persist($commande);
         $entityManager->flush();
 
         if ($commande->isLivrable()) {
-           
-
+            // Create a new Livraison entity
             $livraison = new Livraison();
 
+            // Set the reference
             $commandeReference = $commande->getReference();
             $livraison->setReference($commandeReference);
 
+            // Set the status
             $livraison->setStatusLivraison('en attente');
 
+            // Set the price
             $livraison->setPrixLivraison(8);
 
+            // Set the date
             $commandeDate = $commande->getDateCom();
             if ($commandeDate !== null) {
                 $livraisonDate = (new \DateTime($commandeDate->format('Y-m-d')))->modify('+2 days');
@@ -212,37 +274,41 @@ public function addCommande($idUser, $panierId,Request $request, PanierRepositor
                 $livraison->setDateLivraison($defaultLivraisonDate);
             }
 
+            // Set the User
             $livraison->setIdUser($user);
 
+            // Set the Commande
             $livraison->setIdCommande($commande);
 
+            // Persist the Livraison entity
             $entityManager->persist($livraison);
             $entityManager->flush();
 
-            return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId,
-            'user' => $user
-        ]);
+            // Redirect to the confirmation page
+    return $this->redirectToRoute('confirmer_commande', [ 'panierId' => $panierId]);
         } else {
+            // Redirect to the confirmation page
             return $this->redirectToRoute('confirmer_commande', ['panierId' => $panierId]);
         }
     }
 
-   
+    // Render the form
     return $this->render('commande/frontform.html.twig', [
         'form' => $form->createView(),
-        'commande' => $commande,
-        'panier' => $panier,
-        'userId' => $user,
-       
-
-    
+        'commande' => $commande,'panierId' => $panierId,
+        'panier' => $panier,'cate' => $listCategories,
     ]);
 }
+
 
 
 #[Route('/confirmer/{panierId}', name: 'confirmer_commande')]
 public function confirmerCommande(PanierRepository $panierRepository, CommandeRepository $commandeRepository, $panierId): Response
 {
+
+    $em = $this->getDoctrine()->getManager();
+
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
     $panier = $panierRepository->find($panierId);
     
     if (!$panier) {
@@ -254,52 +320,67 @@ public function confirmerCommande(PanierRepository $panierRepository, CommandeRe
     return $this->render('commande/confirmation.html.twig', [
         'panier' => $panier, 
         'commande' => $commande, 
+        'cate' => $listCategories,
+        
     ]);
 }
 
 
 
-
-#[Route('/commandefront/{userId}', name: 'afficher_commandefront')]
-public function displayUserCommands($userId, CommandeRepository $commandeRepository, UserRepository $userRepository): Response
+#[Route('/commandefront', name: 'afficher_commandefront')]
+public function displayUserCommands(CommandeRepository $commandeRepository, SessionInterface $session): Response
 {
+    // Get the currently authenticated user
+    $user = $this->getUser();
 
-    $userCommands = $commandeRepository->findBy(['idUser' => $userId]);
-
-    $user = $userRepository->find($userId);
-
-   
+    // Check if a user is logged in
     if (!$user) {
-       
-        throw $this->createNotFoundException('User not found');
+        // Handle the scenario where no user is logged in, e.g., redirect to login page
+        // For example:
+        return $this->redirectToRoute('app_login');
     }
 
-   
+    // Retrieve user commands based on the currently authenticated user
+    $userCommands = $commandeRepository->findBy(['id_user' => $user]);
+
+    // Fetch categories from the database
+    $em = $this->getDoctrine()->getManager();
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
+
+    // Render the template with user commands and other necessary data
     return $this->render('commande/CommandListFront.html.twig', [
         'user' => $user,
-        'userId' => $userId,
         'com' => $userCommands,
+        'cate' => $listCategories,
     ]);
 }
 
-    #[Route('/commande/delete/{id}', name: 'commande_deletefront')]
-    public function deleteCommandefront($id, CommandeRepository $commandeRepository, EntityManagerInterface $entityManager): JsonResponse
-    {
-       
-        $command = $commandeRepository->find($id);
-    
-        if (!$command) {
-            return new JsonResponse(['error' => 'Command not found'], Response::HTTP_NOT_FOUND);
-        }
-    
-       
-        $entityManager->remove($command);
-        $entityManager->flush();
-    
-        return new JsonResponse(['message' => 'Command deleted successfully']);
+#[Route('/commande/delete/{id}', name: 'commande_deletefront')]
+public function deleteCommandefront($id, CommandeRepository $commandeRepository, EntityManagerInterface $entityManager, SessionInterface $session): JsonResponse
+{
+    $user = $this->getUser();
+
+    $command = $commandeRepository->find($id);
+    $em = $this->getDoctrine()->getManager();
+    $listCategories = $em->getRepository(Catégorie::class)->findAll();
+
+    if (!$command) {
+        return new JsonResponse(['error' => 'Command not found', 'cate' => $listCategories], Response::HTTP_NOT_FOUND);
     }
 
+    // Check if the status of the command is "Traitée" or "Annulée"
+    $status = $command->getStatus();
+    if ($status === 'Traitée' || $status === 'Annulée') {
+        return new JsonResponse(['error' => 'Cannot delete command with status "Traitée" or "Annulée"', 'cate' => $listCategories], Response::HTTP_BAD_REQUEST);
+    }
 
+    $entityManager->remove($command);
+    $entityManager->flush();
+
+    return new JsonResponse(['message' => 'Command deleted successfully', 'cate' => $listCategories]);
+}
+
+/*
     #[Route('/facture/{iduser}', name: 'facture')]
     public function facture($iduser, PanierRepository $panierRepository): Response
     {
@@ -361,7 +442,7 @@ public function indexpdf($iduser, PanierRepository $panierRepository)
 
 
 
-    /*
+    
     public function checkout(Panier $panier, StripeService $stripeService)
     {
         $stripeParams = []; // Add any additional Stripe parameters here
@@ -378,17 +459,17 @@ public function indexpdf($iduser, PanierRepository $panierRepository)
 
  
     #[Route('/checkout/{userId}', name: 'checkout', methods: ['GET', 'POST'])]
-    public function checkout($userId, Request $request, PanierRepository $panierRepository, ProduitRepository $produitRepository): Response
+    public function checkout($userId, Request $request, PanierRepository $panierRepository, ProduitRepository $produitRepository, SessionInterface $session ): Response
     {
         Stripe::setApiKey('sk_test_51Oq3VTC4DfcX81jOg4IgEi0DJ88o63817Nf6dAFOFyj6G249vlbaCGEipesnC5cEIaCzsT3PD2j0SGXrkmzGNWUn00AqxMnm2A');
     
-        $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+        $user = $this->getUser();
     
         if (!$user) {
             $this->addFlash('warning', 'Utilisateur non trouvé.');
         }
     
-        $panier = $panierRepository->findBy(['idUser' => $userId]);
+        $panier = $panierRepository->findBy(['id_user' => $userId]);
     
         if (empty($panier)) {
             $this->addFlash('warning', 'Aucun article de panier trouvé pour l\'utilisateur fourni.');
@@ -438,23 +519,115 @@ public function indexpdf($iduser, PanierRepository $panierRepository)
 
 
         ]);
+
     
         return $this->redirect($session->url, 303);
     }
     
 
 
-
-
     #[Route('/success-url', name: 'success_url')]
-    public function successUrl(): Response
+    public function successUrl(SessionInterface $session, Request $request, PanierRepository $panierRepository, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('commande/confirmation.html.twig', []);
+        // Get the current authenticated user
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+        $panier = $panierRepository->findOneBy(['id_user' => $user]);
+        $listCategories = $em->getRepository(Catégorie::class)->findAll();
+    
+        // Retrieve any panier associated with the user
+        $panier = $panierRepository->findOneBy(['id_user' => $user]);
+    
+        // If panier is not found, handle the scenario according to your application logic
+        if (!$panier) {
+            throw $this->createNotFoundException('No panier found for this user.');
+        }
+    /*
+        $commande = new Commande();
+    
+        $form = $this->createForm(CommandeType::class, $commande);
+    
+        // Remove the 'status' field from the form
+        $form->remove('status');
+    
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+            $livrable = $commande->isLivrable();
+    
+            if ($livrable === true) {
+                $commande->setLivrable(true);
+            } else {
+                $commande->setLivrable(false);
+            }
+    
+            $commande->setPanier($panier);
+            $commande->setDateCom(new \DateTime());
+            $randomReference = random_int(100000, 999999);
+            $commande->setReference($randomReference);
+            $commande->setPrixTotal($panier);
+    
+            if (!$user) {
+                throw new \Exception('Failed to retrieve User from Panier');
+            }
+    
+            // Set the user associated with the panier
+            $commande->setIdUser($panier->getIdUser());
+    
+            if ($commande->getPanier() === null || $commande->getIdUser() === null) {
+                throw new \Exception('Panier and User cannot be null for Commande creation');
+            }
+    
+            $entityManager->persist($commande);
+            $entityManager->flush();
+    
+            if ($commande->isLivrable()) {
+                $livraison = new Livraison();
+                $commandeReference = $commande->getReference();
+                $livraison->setReference($commandeReference);
+                $livraison->setStatusLivraison('en attente');
+                $livraison->setPrixLivraison(8);
+                $commandeDate = $commande->getDateCom();
+    
+                if ($commandeDate !== null) {
+                    $livraisonDate = (new \DateTime($commandeDate->format('Y-m-d')))->modify('+2 days');
+                    $livraison->setDateLivraison($livraisonDate);
+                } else {
+                    $defaultLivraisonDate = new \DateTime();
+                    $defaultLivraisonDate->modify('+2 days');
+                    $livraison->setDateLivraison($defaultLivraisonDate);
+                }
+    
+                $livraison->setIdUser($user);
+                $livraison->setIdCommande($commande);
+                $entityManager->persist($livraison);
+                $entityManager->flush();
+    
+                return $this->redirectToRoute('confirmer_commande', [
+                    'panierId' => $panier->getIdPanier(),
+                    'userId' => $user,
+                    'cate' => $listCategories,
+                ]);
+            }
+        }*/
+    
+        return $this->redirectToRoute('confirmer_commande', [
+            'panierId' => $panier->getIdPanier(),
+            'cate' => $listCategories,
+            'user' => $user
+        ]);
     }
+    
 
     #[Route('/statcommande', name: 'statCom')]
-    public function StatCommandes(CommandeRepository $commandeRepository): Response
+    public function StatCommandes(CommandeRepository $commandeRepository,ManagerRegistry $emm): Response
     {
+
+        $criteria = ['type' => 'reclamation'];
+        $notification = $emm->getRepository(Notification::class)->findBy($criteria);
+        $criteria2 = ['type' => 'avis'];
+        $notification2 = $emm->getRepository(Notification::class)->findBy($criteria2);
+        $n = $emm->getRepository(Notification::class)->count([]);
         $commandes = $commandeRepository->findAll();
     
         $statuses = [];
@@ -471,8 +644,94 @@ public function indexpdf($iduser, PanierRepository $panierRepository)
     
         
         return $this->render('commande/chartjs.html.twig', [
-            'statuses' => $statuses,
+            'statuses' => $statuses, 
+            'notifR' => $notification, 'n' => $n, 'notifA' => $notification2
         ]);
+    }
+
+
+    public function verifierproduit(CommandeRepository $commandeRepository, PanierRepository $panierRepository): void {
+        // Fetch all commandes with 'en attente' status
+        $commandes = $commandeRepository->findBy(['status' => 'en attente']);
+        
+        foreach ($commandes as $commande) {
+            // Get the user associated with the commande
+            $user = $commande->getIdUser();
+    
+            // Fetch all panier associated with the user
+            $paniers = $panierRepository->findBy(['id_user' => $user]);
+    
+            // Process each panier for this user
+            foreach ($paniers as $panier) {
+                $quantite_panier = $panier->getQuantiteparproduit();
+    
+                if ($quantite_panier <= $panier->getIdProduit()->getQteseuilp()) {
+                    $this->sendconfirmer($commande);
+                    // Update the status of the Commande object
+                    $commande->setStatus('Traitée');
+                } else {
+                    $this->sendechec($commande);
+                    $commande->setStatus('Annulée');
+                }
+            }
+        }
+    }
+
+    
+
+    public function sendconfirmer(Commande $commande): void
+    {   
+   
+        try {
+            
+        $transport = Transport::fromDsn('smtp://bourayourana8@gmail.com:swqqmtddezmthuts@smtp.gmail.com:587?encryption=tls&verify_peer=0');
+        $mailer = new Mailer($transport);
+            $email = (new Email())
+                ->from('bourayourana8@gmail.com')
+              //  ->to($commande->getIdUser()->getEmailusr())
+                -> to('ranabourayou3@gmail.com')
+                ->subject('Votre commande est confirmée')
+                ->html("
+                <html>
+                    <body>
+                        <h1 style='color: #333;'>Commande Confirmer !</h1>
+                        <p>votre commande est bien confirmer elle sera prete en 2-3 jours.</p>
+                    </body>
+                </html>
+                ");
+              
+
+            $mailer->send($email);
+        } catch (TransportException $e) {
+            print $e->getMessage()."\n";
+            throw $e;
+        }
+
+    }
+    public function sendechec(Commande $commande): void {   
+        try {   
+            $transport = Transport::fromDsn('smtp://bourayourana8@gmail.com:swqqmtddezmthuts@smtp.gmail.com:587?encryption=tls&verify_peer=0');
+            $mailer = new Mailer($transport);
+            $email = (new Email())
+                ->from('bourayourana8@gmail.com')
+                              //  ->to($commande->getIdUser()->getEmailusr())
+
+                ->to('ranabourayou3@gmail.com')
+                ->subject('Echec commande !')
+                ->html("
+                    <html>
+                        <body>
+                            <h1 style='color: #333;'>Echec commande !</h1>
+                            <p>Votre commande est annulée vu que le(s) produit(s) <strong>{$commande->getIdPanier()->getIdProduit()->getNomp()}</strong> est en rupture de stock.</p>
+                        </body>
+                    </html>
+                ");
+                  
+            $mailer->send($email);
+        } catch (TransportException $e) {
+            print $e->getMessage()."\n";
+            throw $e;
+        }
     }
     
 }    

@@ -2,98 +2,122 @@
 
 namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Produit;
 use App\Entity\User;
+use App\Entity\Produit;
+use App\Repository\PanierRepository;
 
 /**
  * Panier
  *
  * @ORM\Table(name="panier", indexes={@ORM\Index(name="produitFK", columns={"Id_Produit"}), @ORM\Index(name="fk_panier_user", columns={"id_user"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\PanierRepository")
  */
 class Panier
 {
     /**
-     * @var int
+     * 
      *
      * @ORM\Column(name="Id_Panier", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $idPanier;
+    public $Id_Panier;
 
     /**
-     * @var int
+     * 
      *
      * @ORM\Column(name="QuantiteParProduit", type="integer", nullable=false)
      */
-    private $quantiteparproduit;
+    public $QuantiteParProduit;
 
     /**
-     * @var User
+     * 
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_user", referencedColumnName="id_user")
      * })
      */
-    private $idUser;
+    public $id_user;
 
     /**
-     * @var Produit
+     * 
      *
      * @ORM\ManyToOne(targetEntity="Produit")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="Id_Produit", referencedColumnName="Id_Produit")
      * })
      */
-    private $idProduit;
+    public $Id_Produit;
+
+
+
+/**
+     * 
+     *
+     * @ORM\Column(name="PrixPanierUnitaire", type="float", nullable=false)
+     */
+   
+
+     public $PrixPanierUnitaire;
+    public function getprixunitairepanier()
+    {
+        return $this->PrixPanierUnitaire;
+    }
+    public function setprixpanierunitaire(float $PrixPanierUnitaire): self
+    {
+        $this->PrixPanierUnitaire = $PrixPanierUnitaire;
+
+        return $this;
+    }
+
+
 
     public function getIdPanier(): ?int
     {
-        return $this->idPanier;
+        return $this->Id_Panier;
     }
 
     public function getQuantiteparproduit(): ?int
     {
-        return $this->quantiteparproduit;
+        return $this->QuantiteParProduit;
     }
 
     public function setQuantiteparproduit(int $quantiteparproduit): self
     {
-        $this->quantiteparproduit = $quantiteparproduit;
+        $this->QuantiteParProduit = $quantiteparproduit;
 
         return $this;
     }
 
-    public function getIdUser(): ?User
+    public function getIdUser()
     {
-        return $this->idUser;
+        return $this->id_user;
     }
 
     public function setIdUser(?User $idUser): self
     {
-        $this->idUser = $idUser;
+        $this->id_user = $idUser;
 
         return $this;
     }
 
-    public function getIdProduit(): ?Produit
+    public function getIdProduit()
     {
-        return $this->idProduit;
+        return $this->Id_Produit;
     }
 
     public function setIdProduit(?Produit $idProduit): self
     {
-        $this->idProduit = $idProduit;
+        $this->Id_Produit = $idProduit;
 
         return $this;
     }
 
-    public function getUser(): ?User
-{
-  return $this->idUser;
-}
+    public function getPrixPanierUnitaire(): ?float
+    {
+        return $this->PrixPanierUnitaire;
+    }
 
 
 }
