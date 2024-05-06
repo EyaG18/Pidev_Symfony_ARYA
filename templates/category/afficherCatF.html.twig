@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+    {{ parent() }} {# Inclut le contenu du bloc stylesheets du template parent #}
+
+
+{% endblock %}
+
+
+ {% block AabiElWest1 %}
+         <div class="dropdown">
+                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Category 
+                     </button>
+     
+                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                     {% for c in cate %}
+                        <a class="dropdown-item" href="#">{{c.NomCategorie}}</a>
+                         {% endfor %}
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                     </div>
+                  </div>
+ {% endblock %}
+
+
+
+ 

@@ -1,0 +1,121 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block AabiElWest %}
+	<div
+		class="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 class="h3 mb-4 text-gray-800">Bienvenue à Aziz !</h1>
+
+
+		<div
+			class="container-fluid">
+
+			<!-- DataTales Example -->
+			<div class="card shadow mb-4">
+				<div class="card-header py-3">
+					<h6 class="m-0 font-weight-bold text-primary">Fournisseurs List
+					</h6>
+				</div>
+
+				<div class="card-body">
+
+					<div class="table-responsive">
+
+						<form class="mb-4 px-4" action="{{ path('app_back_Fournisseur') }}" method="get">
+							<div class="row">
+
+								<div class="col-lg-2">
+									<label for="search_by" class="form-label">Search By:</label>
+									<select class="form-control" id="search_by" name="search_by">
+										<option value="idFournisseur">N° Fournisseur</option>
+										<option value="nomFournisseur">Nom</option>
+										<option value="numFournisseur">Numero</option>
+										<option value="adresseFournisseur">Addresse</option>
+									</select>
+								</div>
+								<div class="mt-4 col-lg-10">
+									<div class="mt-1 input-group">
+										<input type="text" class="form-control" name="search" placeholder="Search..." value="{{ app.request.query.get('search') }}">
+										<button type="submit" class="btn btn-primary">Search</button>
+									</div>
+								</div>
+								<div class="mt-2 col-lg-2">
+									<label for="sort_by" class="form-label">Sort By:</label>
+									<select class="form-control" id="sort_by" name="sort_by">
+										<option value="idFournisseur">N° Fournisseur</option>
+										<option value="nomFournisseur">Nom</option>
+										<option value="numFournisseur">Numero</option>
+										<option value="adresseFournisseur">Addresse</option>
+									</select>
+								</div>
+								<div class="mt-2 col-lg-2">
+									<label for="sort_order" class="form-label">Sort Order:</label>
+									<select class="form-control" id="sort_order" name="sort_order">
+										<option value="asc">Ascending</option>
+										<option value="desc">Descending</option>
+									</select>
+								</div>
+							</div>
+
+							<button type="submit" class="btn btn-primary mt-2">Sort</button>
+						</form>
+						<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+							<thead>
+								<tr>
+									<th>
+										ID
+									</th>
+									<th>
+										Nom
+									</th>
+									<th>Numero
+									</th>
+									<th>Addresse</th>
+									<th>Produit
+									</th>
+									<th>QR Code
+									</th>
+									<th>Etat
+									</th>
+									<th>Modifier
+									</th>
+									<th>Supprimer
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for index,item in items %}
+									<tr>
+										<td>{{ item.idFournisseur }}</td>
+										<td>{{ item.nomFournisseur }}</td>
+										<td>
+											<span class="badge bg-primary text-white p-2">{{ item.numFournisseur }}</span>
+										</td>
+										<td>
+											<span class="badge bg-primary text-white p-2">{{ item.adresseFournisseur }}</span>
+										</td>
+										<td>{{ item.idProduit.nomP }}</td>
+										<td><img style="width:100px" src="{{ qrCodes[index] }}"/></td>
+										<td>
+											<a class="btn btn-success text-white" href="/back/Fournisseur/accepter/{{item.idFournisseur}}">Accepter</a>
+										</td>
+										<td>
+											<a class="btn btn-success text-white" href="/back/Fournisseur/update/{{item.idFournisseur}}">EDIT</a>
+										</td>
+										<td>
+											<a class="btn btn-danger text-white" href="/back/Fournisseur/delete/{{item.idFournisseur}}" +>DELETE</a>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+
+						</table>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}

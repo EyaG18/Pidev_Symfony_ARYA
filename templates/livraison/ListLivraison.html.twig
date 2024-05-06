@@ -1,0 +1,79 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block AabiElWest %}
+
+<h1>Liste actuelle des Livraisons</h1>
+
+<!-- Table for displaying deliveries -->
+<table id="livraisonTable" border="2">
+    <thead>
+        <tr>
+            <th>Référence livraison</th>
+            <th>Client</th>
+            <th>Email Client</th>
+            <th>Addresse Client</th>
+            <th>Date Livraison</th>
+            <th>Prix Livraison</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for livraison in liv %}
+        <tr>
+            <td>{{ livraison.idCommande.reference }}</td>
+            <td>{{ livraison.idUser.nomuser }} {{ livraison.idUser.prenomuser }}</td>
+            <td>{{ livraison.idUser.emailusr }}</td>
+            <td>{{ livraison.idUser.adruser }}</td>
+            <td>{{ livraison.dateLivraison|date('Y-m-d') }}</td>
+            <td>{{ livraison.prixLivraison }}</td>
+            <td>{{ livraison.statusLivraison }}</td>
+            <td>
+                <a href="{{ path('livraison_update', {'id': livraison.idLivraison}) }}" class="btn btn-primary">Modifier</a>
+                <a href="{{ path('livraison_delete', {'id': livraison.idLivraison}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette livraison ?')">Supprimer</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="8">Aucun enregistrement trouvé</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination -->
+{{ knp_pagination_render(pagination) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Handle search button click event
+            $('#searchButton').click(function() {
+                applySearch();
+            });
+
+            // Handle enter key press event in the search input field
+            $('#searchInput').keypress(function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    applySearch();
+                }
+            });
+
+            function applySearch() {
+                var searchTerm = $('#searchInput').val().toLowerCase();
+                $('#livraisonTable tbody tr').each(function() {
+                    var rowText = $(this).text().toLowerCase();
+                    if (rowText.includes(searchTerm)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

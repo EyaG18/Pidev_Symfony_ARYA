@@ -1,0 +1,25 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block AabiElWest %}
+	<div
+		class="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 class="h3 mb-4 text-gray-800">Bienvenue à Aziz!</h1>
+
+
+		<div class="container">
+			<h1>Add Offre</h1>
+
+			{{ form_start(form, {'attr': {'novalidate': null}}) }}
+
+			{{ form_widget(form) }}
+
+			{{ form_errors(form )}}
+
+			{{ form_end(form) }}
+
+
+		</div>
+	</div>
+{% endblock %}

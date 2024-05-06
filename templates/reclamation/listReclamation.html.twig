@@ -1,0 +1,327 @@
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+	{{ parent() }}
+	{# Inclut le contenu du bloc stylesheets du template parent #}
+
+	<style>
+
+		* {
+			margin: 0;
+			padding: 0;
+			font-family: poppins;
+			box-sizing: border-box;
+		}
+		a {
+			text-decoration: none;
+		}
+		#testimonials {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			width: 100%;
+		}
+		.testimonial-heading {
+			letter-spacing: 1px;
+			margin: 30px 0;
+			padding: 10px 20px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+		.testimonial-heading h1 {
+			font-size: 2.2rem;
+			font-weight: 500;
+			background-color: #202020;
+			color: #ffffff;
+			padding: 10px 20px;
+		}
+		.testimonial-heading span {
+			font-size: 1.3rem;
+			color: #252525;
+			margin-bottom: 10px;
+			letter-spacing: 2px;
+			text-transform: uppercase;
+		}
+		.testimonial-box-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-wrap: wrap;
+			width: 100%;
+
+		}
+		.testimonial-box {
+			width: 500px;
+			box-shadow: 2px 2px 30px rgba(0, 0, 0, 0.1);
+			background-color: #ffffff;
+			padding: 20px;
+			margin: 15px;
+			cursor: pointer;
+		}
+		.profile-img {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			overflow: hidden;
+			margin-right: 10px;
+		}
+		.profile-img img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: center;
+		}
+		.profile {
+			display: flex;
+			align-items: center;
+		}
+		.name-user {
+			display: flex;
+			flex-direction: column;
+		}
+		.name-user strong {
+			color: #3d3d3d;
+			font-size: 1.1rem;
+			letter-spacing: 0.5px;
+		}
+		.name-user span {
+			color: #979797;
+			font-size: 0.8rem;
+		}
+		.reviews {
+			color: #f9d71c;
+		}
+		.box-top {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+		.client-comment p {
+			font-size: 0.9rem;
+			color: #4b4b4b;
+		}
+		.testimonial-box:hover {
+			transform: translateY(-10px);
+			transition: all ease 0.3s;
+		}
+
+		@media(max-width:1060px) {
+			.testimonial-box {
+				width: 45%;
+				padding: 10px;
+			}
+		}
+		@media(max-width:790px) {
+			.testimonial-box {
+				width: 100%;
+			}
+			.testimonial-heading h1 {
+				font-size: 1.4rem;
+			}
+		}
+		@media(max-width:340px) {
+			.box-top {
+				flex-wrap: wrap;
+				margin-bottom: 10px;
+			}
+			.reviews {
+				margin-top: 10px;
+				margin-right: 20px;
+			}
+		}
+		::selection {
+			color: #ffffff;
+			background-color: #252525;
+		}
+		.custom-button {
+			position: absolute;
+			bottom: 10px; /* Ajustez la distance par rapport au bas */
+			right: 10px; /* Ajustez la distance par rapport à la droite */
+			background-color: #007bff;
+			color: white;
+			border: none;
+			padding: 10px 20px;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		#dropdown {
+			position: absolute;
+
+			padding: 10px;
+		}
+		#chat {
+			cursor: pointer;
+			color: white; /* Couleur du texte du lien */
+		}
+		#chat:hover {
+			text-decoration: underline; /* Souligner le texte lorsque survolé */
+			cursor: pointer; /* Changer le curseur en pointeur */
+		}
+		.testimonial-heading {
+			letter-spacing: 1px;
+			margin: 30px 0;
+			padding: 10px 20px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+		.testimonial-heading h1 {
+			font-size: 2.2rem;
+			font-weight: 500;
+			background-color: #202020;
+			color: #ffffff;
+			padding: 10px 20px;
+		}
+		.testimonial-heading span {
+			font-size: 1.3rem;
+			color: #252525;
+			margin-bottom: 10px;
+			letter-spacing: 2px;
+			text-transform: uppercase;
+		}
+	</style>
+{% endblock %}
+
+
+{% block AabiElWest1 %}
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+var afficherDropdown = document.getElementById('chat');
+var dropdown = document.getElementById('dropdown');
+
+// Écouteur d'événement pour le clic sur le lien
+afficherDropdown.addEventListener('click', function () {
+dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none'; // Afficher ou masquer le contenu dropdown
+});
+});
+	</script>
+	<div class="fashion_section">
+		<div class="background-colour">
+			<div class="testimonial-heading">
+				<h1 id="chat">chatbot pour une reponse rapide sur vos reclamation
+				</h1>
+				<div id="dropdown" style="display: none;">
+					<p>
+						<iframe allow="microphone;" width="350" height="430" src="https://console.dialogflow.com/api-client/demo/embedded/62dd377b-9d00-4819-a57f-29b688745f1b"></iframe>
+					</p>
+				</div>
+
+
+			</div>
+			{% for R in reclamationT %}
+				<div
+					class="testimonial-box-container">
+
+
+					<!--BOX-1-------------->
+					<div
+						class="testimonial-box">
+						<!--top------------------------->
+						<div
+							class="box-top">
+							<!--profile----->
+							<div class="profile">
+								<!--img---->
+
+
+								<!--name-and-username-->
+									<div class="name-user"> <strong>{{ R.typeReclamation}}
+									</strong>
+									<span>{{ R.dateReclamation|date('Y-m-d') }}</span>
+									{{ R.statuReclamation }}
+								</div>
+							</div>
+
+							<!--reviews------>
+
+
+							<div class="lang_box ">
+
+								<div class="dropdown-menu "></div>
+
+
+							</div>
+
+
+						</div>
+						<!--Comments---------------------------------------->
+						<div class="client-comment">
+							<p>{{ R.description }}.</p>
+						</div>
+					</div>
+
+				</div>
+			{% endfor %}
+
+
+			{% for R in reclamationNT %}
+				<div
+					class="testimonial-box-container">
+
+
+					<!--BOX-1-------------->
+					<div
+						class="testimonial-box">
+						<!--top------------------------->
+						<div
+							class="box-top">
+							<!--profile----->
+							<div class="profile">
+								<!--img---->
+
+
+								<!--name-and-username-->
+									<div class="name-user"> <strong>{{ R.typeReclamation}}
+									</strong>
+									<span>{{ R.dateReclamation|date('Y-m-d') }}</span>
+									{{ R.statuReclamation }}
+								</div>
+							</div>
+
+							<!--reviews------>
+
+							{% if R.statuReclamation == 'en attente' %}
+								<div class="lang_box ">
+									<a href="#" title="Language" class="nav-link" data-toggle="dropdown" aria-expanded="true">
+										<img src="{{ asset('images/toggle-icon.png')}}" alt="flag" class="mr-2 " title="United Kingdom">
+										<i class="fa fa-angle-down ml-2" aria-hidden="true"></i>
+									</a>
+
+									<div class="dropdown-menu ">
+										<a href="{{ path('app_editReclamation', {'ref': R.idReclamation}) }}" class="dropdown-item">
+											<img src="{{ asset('images/edit.png')}}" class="mr-2" alt="flag">
+											modifier
+										</a>
+										<a href="{{ path('app_deleteReclamation', {'id_r': R.getIdReclamation()}) }}" class="dropdown-item">
+											<img src="{{ asset('images/delete2.png')}}" class="mr-2" alt="flag">
+											supprimer
+										</a>
+									</div>
+
+								{% endif %}
+							</div>
+
+
+						</div>
+						<!--Comments---------------------------------------->
+						<div class="client-comment">
+							<p>{{ R.description }}.</p>
+						</div>
+					</div>
+
+				</div>
+			{% endfor %}
+
+		</div>
+
+
+	</div>
+
+{% endblock %}

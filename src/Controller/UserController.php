@@ -18,14 +18,18 @@ class UserController extends AbstractController
 {
 
     #[Route('/back/users', name: 'app_back_userList')]
-    public function UserList(UserRepository $userRepository,SessionInterface $session): Response
+    public function UserList(Request $request,UserRepository $userRepository,SessionInterface $session): Response
     {
-        
+        $searchQuery = $request->query->get('search');
+        $searchBy = $request->query->get('search_by', 'idUser');
 
-        $users = $userRepository->findAll();
+        $sortBy = $request->query->get('sort_by', 'idUser');
+        $sortOrder = $request->query->get('sort_order', 'asc');
+
+        $items = $userRepository->findBySearchAndSort($searchBy,$searchQuery, $sortBy, $sortOrder);
 
         return $this->render('back/User/userAll.html.twig', [
-            'users' => $users,
+            'users' => $items,
             
         ]);
     }

@@ -10,7 +10,7 @@ security:
 
     enable_authenticator_manager: true
     password_hashers:
-        App\Entity\User: 'plaintext'
+        App\Entity\User: auto
 
     providers:
         # Configure your custom user provider to load users from the database

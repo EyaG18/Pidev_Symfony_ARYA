@@ -1,0 +1,326 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}Commande{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: calc(100% - 12px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .selected-products {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .selected-products h2 {
+            margin-top: 0;
+            color: #007bff;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .product-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .product-list li {
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .product-list li span {
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .product-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .product-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-actions {
+            display: flex;
+            align-items: center;
+        }
+
+
+        .product-name {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-quantity,
+        .product-color {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .product-quantity::after {
+            content: "x";
+            margin: 0 5px;
+        }
+
+        .product-color::before {
+            content: "Couleur:";
+            margin-right: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .selected-products {
+            margin-bottom: 20px;
+        }
+
+        .total-price {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+
+        .livraison-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .livraison-option input[type="radio"] {
+            display: none;
+        }
+
+        .livraison-option label {
+            cursor: pointer;
+            padding-left: 30px;
+            position: relative;
+            font-family: 'Elephant', sans-serif;
+            font-size: 18px;
+            color: #5BAADE;
+        }
+
+        .livraison-option label:before {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 2px solid #5BAADE;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            top: 2px;
+        }
+
+        .livraison-option input[type="radio"]:checked + label:before {
+            background-color: #5BAADE;
+        }
+
+        .livraison-option label span {
+            margin-left: 10px;
+            font-family: 'Ink Free', sans-serif;
+            color: #EEBBDF;
+        }
+
+        .payment-inputs {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>{%endblock%}
+
+    {% block AabiElWest1 %}
+    <form method="POST">
+    
+      <h1>Commande</h1>
+      <h2>Produits sélectionnés</h2>
+      <ul class="product-list" id="productList">
+        <!-- Les produits sélectionnés seront affichés ici -->
+        <ul>
+          {% set totalPrice = 0 %} {# Initialize total price variable #}
+          {% for panier in panier %}
+          <li>
+            <div class="product-details">
+              <div class="product-info">
+                <span class="product-name">{{ panier.getIdProduit().getNomp() }}</span>
+                <span class="product-quantity">Quantité : {{ panier.getQuantiteparproduit() }}</span>
+                <span class="product-price">Prix unitaire : {{ panier.getIdProduit().getPrixp() }} Dt</span>
+              </div>
+            </div>
+            <!-- Calculate and accumulate total price for each item -->
+            {% set totalPrice = totalPrice + (panier.getQuantiteparproduit() * panier.getIdProduit().getPrixp()) %}
+          </li>
+          {% endfor %}
+        </ul>
+    
+        <!-- Display total price after the loop -->
+        <div class="total-price">
+          <h2>Prix total: {{ totalPrice }} Dt</h2>
+        </div>
+      </ul>
+    
+      <!-- Informations client -->
+      <div class="form-group row">
+        <div class="col-md-6">
+          <label for="input_nom">Nom</label>
+          <!-- Display user's last name as plain text -->
+          <span id="input_nom" class="form-control-static">{{ user.getNomuser() }}</span>
+        </div>
+        <div class="col-md-6">
+          <label for="input_entreprise">Prénom</label>
+          <!-- Display user's first name as plain text -->
+          <span id="input_entreprise" class="form-control-static">{{ user.getPrenomuser() }}</span>
+        </div>
+      </div>
+    
+      <div class="form-group row">
+        <div class="col-md-6">
+          <label for="input_telephone">Numéro de téléphone</label>
+          <!-- Display user's telephone number as plain text -->
+          <span id="input_telephone" class="form-control-static">{{ user.getNumtel() }}</span>
+        </div>
+        <div class="col-md-6">
+          <label for="input_email">Email</label>
+          <!-- Display user's email as plain text -->
+          <span id="input_email" class="form-control-static">{{ user.getEmailusr() }}</span>
+        </div>
+      </div>
+
+    
+      <!-- Payment Input (Shown when Livraison à Domicile is selected) -->
+      <div class="payment-inputs" style="display: none;">
+        <div class="form-group row">
+          <div class="col-md-6">
+            <label for="input_telephone">Addresse</label>
+            <!-- Display user's address as plain text -->
+            <span id="input_telephone" class="form-control-static">{{ user.getAdruser() }}</span>
+          </div>
+    
+          <div class="col-md-6">
+            <label for="input_code_postal">Code postal</label>
+            <input type="text" id="input_code_postal" name="code_postal" class="form-control">
+          </div>
+        </div>
+    
+        <div class="form-group">
+          <label for="input_card_number">Numéro de carte:</label>
+          <input type="text" id="input_card_number" name="card_number" required pattern="[0-9]{16}" title="Veuillez saisir un numéro de carte valide (16 chiffres).">
+        </div>
+        <div class="col-md-6">
+          <label for="input_card_holder">Titulaire de la carte:</label>
+          <input type="text" id="input_card_holder" name="card_holder" required>
+        </div>
+        <div class="col-md-6">
+          <label for="input_exp_date">Date d'expiration (MM/YY):</label>
+          <input type="text" id="input_exp_date" name="exp_date" required pattern="(0[1-9]|1[0-2])\/([0-9]{2})" title="Veuillez saisir une date d'expiration valide (MM/YY).">
+        </div>
+        <div class="col-md-6">
+          <label for="input_cvv">CVV:</label>
+          <input type="text" id="input_cvv" name="cvv" required pattern="[0-9]{3,4}" title="Veuillez saisir un code CVV valide (3 ou 4 chiffres).">
+        </div>
+      </div>
+    
+
+    
+      <!-- Submit Buttons -->
+      <div class="form-group"> 
+
+      
+
+        <div style="text-align: center;">
+        <a href="{{ path('add_commande', {'id_user': user.id_user}) }}" class="btn btn-primary">Confirmer</a>
+        
+        </div>
+
+      </div>
+    </form>
+    
+    </form>
+    
+    
+
+    {% endblock %}
+    

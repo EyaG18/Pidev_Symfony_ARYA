@@ -15,14 +15,20 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AuthentificationController extends AbstractController
 {
     #[Route('/register', name: 'app_authentification_register')]
-    public function register(Request $request,ManagerRegistry $manager, SessionInterface $session, Filesystem $filesystem): Response
-    {
+    public function register(
+        Request $request,
+        ManagerRegistry $manager,
+        SessionInterface $session,
+        Filesystem $filesystem,
+        UserPasswordEncoderInterface $passwordEncoder // Use password encoder interface
+    ): Response {
         $user = new User();
 
         $form = $this->createForm(UserType::class, $user);
@@ -30,6 +36,9 @@ class AuthentificationController extends AbstractController
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
+            $hashedPassword = $passwordEncoder->encodePassword($user, $user->getPassword());
+            $user->setPassword($hashedPassword);
+
             $image = $form->get('image')->getData();
             if ($image) {
                 $originalFilename = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);

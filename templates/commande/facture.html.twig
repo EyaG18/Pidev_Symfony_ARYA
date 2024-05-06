@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Facture</h2>
+    <table>
+        <tr>
+            <th>Produit</th>
+            <th>Prix unitaire</th>
+            <th>Quantité</th>
+            <th>Total</th>
+        </tr>
+        {% for panierItem in panier %}
+        <tr>
+            <td>{{ panierItem.idProduit.NomP }}</td>
+            <td>{{ panierItem.idProduit.PrixP }}</td>
+            <td>{{ panierItem.quantiteparproduit }}</td>
+            <td>{{ panierItem.quantiteparproduit * panierItem.idProduit.PrixP }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3" style="text-align: right;">Total:</td>
+            <td>{{ totalPrice }}</td>
+        </tr>
+    </table>
+    <a href="{{ path('facturepdf', {'iduser': iduser}) }}" class="btn btn-primary">imprimer</a>
+
+</body>
+</html>

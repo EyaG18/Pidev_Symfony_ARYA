@@ -1,0 +1,76 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .background-image {
+            background-image: url('images/ringi.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            width: 1000px; /* Ajustez la largeur selon vos besoins */
+        }
+         .form-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8); /* Fond semi-transparent pour le formulaire */
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block AabiElWest %}
+
+
+
+<div class="background-image">
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <div class="modal-dialog" role="document">
+    <div class="modal-header">          
+     <div>
+            <h8 class="m-0 font-weight-bold text-primary">Mise à jour et Modification des Catégories</h8>
+        </div>
+            </div>
+    
+        <div class="modal-content">
+            <div id="notificationContainer"></div>
+
+            {{ form_start(form, {'id': 'monFormulaire'}) }}
+            <div class="modal-body">
+                <div class="form-group">
+                    {{ form_label(form.NomCategorie,"Categorie à Modifier") }}
+                    {{ form_errors(form.NomCategorie) }}
+                    {{ form_widget(form.NomCategorie, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                
+            </div>
+           <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="openShowCategoryInterface()">Retour </button>
+                {# Le libellé du bouton dépend de l'action. Si c'est une modification, utiliser "Modifier", sinon "Ajouter" #}
+                    <button type="submit" class="btn btn-primary" data-dismiss="modal">Modifier</button
+            </div>
+            {{ form_end(form) }}
+        </div>
+
+
+    </div>
+</div>
+</div>
+</div>
+
+<script>
+    function openShowProductInterface() {
+        window.location.href = "{{ path('AffC') }}";
+    }
+</script>
+{% endblock %}

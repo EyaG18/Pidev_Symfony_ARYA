@@ -1,0 +1,117 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block AabiElWest %}
+	<div
+		class="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 class="h3 mb-4 text-gray-800">Bienvenue à Aziz !</h1>
+
+
+		<div
+			class="container-fluid">
+
+			<!-- DataTales Example -->
+			<div class="card shadow mb-4">
+				<div class="card-header py-3">
+					<h6 class="m-0 font-weight-bold text-primary">Offres List
+						<a type="button" class="btn btn-primary text-white" href="/back/Offre/add">
+							Add Offre
+						</a>
+					</h6>
+				</div>
+
+				<div class="card-body">
+
+					<div class="table-responsive">
+						<form class="mb-4 px-4" action="{{ path('app_back_Offre') }}" method="get">
+							<div class="row">
+
+								<div class="col-lg-2">
+									<label for="search_by" class="form-label">Search By:</label>
+									<select class="form-control" id="search_by" name="search_by">
+										<option value="idoffre">N° Offre</option>
+										<option value="dateDebut">Date Debut</option>
+										<option value="dateFin">Date Fin</option>
+										<option value="reduction">Reduction</option>
+										<option value="titreOffre">Titre</option>
+									</select>
+								</div>
+								<div class="mt-4 col-lg-10">
+									<div class="mt-1 input-group">
+										<input type="text" class="form-control" name="search" placeholder="Search..." value="{{ app.request.query.get('search') }}">
+										<button type="submit" class="btn btn-primary">Search</button>
+									</div>
+								</div>
+								<div class="mt-2 col-lg-2">
+									<label for="sort_by" class="form-label">Sort By:</label>
+									<select class="form-control" id="sort_by" name="sort_by">
+										<option value="idoffre">N° Offre</option>
+										<option value="dateDebut">Date Debut</option>
+										<option value="dateFin">Date Fin</option>
+										<option value="reduction">Reduction</option>
+										<option value="titreOffre">Titre</option>
+									</select>
+								</div>
+								<div class="mt-2 col-lg-2">
+									<label for="sort_order" class="form-label">Sort Order:</label>
+									<select class="form-control" id="sort_order" name="sort_order">
+										<option value="asc">Ascending</option>
+										<option value="desc">Descending</option>
+									</select>
+								</div>
+							</div>
+
+							<button type="submit" class="btn btn-primary mt-2">Sort</button>
+						</form>
+						<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+							<thead>
+								<tr>
+									<th>
+										ID
+									</th>
+									<th>
+										Date Debut
+									</th>
+									<th>Date Fin
+									</th>
+									<th>Reduction</th>
+									<th>Titre Offre
+									</th>
+									<th>Produit</th>
+									<th>Modifier
+									</th>
+									<th>Supprimer
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for item in items %}
+									<tr>
+										<td>{{ item.idoffre }}</td>
+										<td>{{ item.dateDebut | date("m/d/y") }}</td>
+										<td>{{ item.dateFin | date("m/d/y") }}</td>
+										<td>
+											<span class="badge bg-success text-white p-2">{{ item.reduction }}</span>
+										</td>
+										<td>{{ item.titreOffre }}</td>
+										<td>{{ item.idProduit.nomP }}</td>
+										<td>
+											<a class="btn btn-success text-white" href="/back/Offre/update/{{item.idoffre}}">EDIT</a>
+										</td>
+										<td>
+											<a class="btn btn-danger text-white" href="/back/Offre/delete/{{item.idoffre}}" +>DELETE</a>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+
+						</table>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}

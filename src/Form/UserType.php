@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use Gregwar\CaptchaBundle\Type\CaptchaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -19,9 +20,17 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('emailusr', EmailType::class, [
+                'attr' => ['class' => 'form-control form-control-user'],
+                'label' => 'Email',
+            ])
             ->add('nomuser', TextType::class, [
                 'attr' => ['class' => 'form-control form-control-user'],
                 'label' => 'Nom',
+            ])
+            ->add('password', TextType::class, [
+                'attr' => ['class' => 'form-control form-control-user'],
+                'label' => 'Password',
             ])
             ->add('prenomuser', TextType::class, [
                 'attr' => ['class' => 'form-control form-control-user'],
@@ -49,6 +58,13 @@ class UserType extends AbstractType
                 'attr' => ['class' => 'form-control form-control-user'],
                 'required' => false,
                 'data_class' => null,
+            ])
+            ->add('captcha', CaptchaType::class, [
+                'label' => 'Please enter the captcha',
+                'mapped' => false,
+                'attr' => [
+                    'placeholder' => 'Enter the captcha',
+                ],
             ])
             ->add('Submit', SubmitType::class, [
                 'attr' => ['class' => 'btn btn-primary btn-user btn-block mt-4'],

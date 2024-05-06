@@ -21,6 +21,21 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    
+    public function findBySearchAndSort($searchBy, $searchQuery, $sortBy, $sortOrder)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        if ($searchQuery && $searchBy) {
+            $qb->andWhere('u.'.$searchBy.' LIKE :searchQuery')
+            ->setParameter('searchQuery', '%'.$searchQuery.'%');
+        }
+
+        $qb->orderBy('u.'.$sortBy, $sortOrder);
+
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

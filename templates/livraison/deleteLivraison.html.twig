@@ -1,0 +1,7 @@
+
+{% block AabiElWest %}
+    <form method="post" action="{{ path('livraison_delete', {'id':livraison.idLivraison}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ livraison.idLivraison) }}">
+        <button class="btn">Supprimer</button>
+    </form>
+{% endblock %}

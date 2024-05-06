@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello FrontController!{% endblock %}
+
+{% block body %}
+<body>
+      <!-- banner bg main start -->
+      <div class="banner_bg_main">
+         <!-- header top section start -->
+         <div class="container">
+            <div class="header_section_top">
+               <div class="row">
+                  <div class="col-sm-12">
+                     <div class="custom_menu">
+                        <ul>
+                  <li><a href="/">Meilleurs ventes</a></li>
+                  <li><a href="/">Idées Cadeaux</a></li>
+                  <li><a href="/">Nouvelles arrivées</a></li>
+                  <li><a href="/offres">Offres du jour</a></li>
+                  <li><a href="/produit">Produits</a></li>
+                           
+                        </ul>
+                        
+                     </div>
+                     
+                  </div>
+                  
+               </div>
+               
+            </div>
+         </div>
+         <!-- banner section end -->
+      </div>
+      <!-- banner bg main end -->
+      <!-- fashion section start -->
+      <div class="fashion_section">
+         <div id="main_slider" class="carousel slide" data-ride="carousel">
+            <div class="container">
+               <h1 class="fashion_taital">Offres du jour</h1>
+               <div class="fashion_section_2">
+                  <div class="row">
+                  {% for item in items %}
+                     
+                     <div class="col-lg-4 col-sm-4">
+                        <div class="box_main">
+                           <h4 class="shirt_text">{{ item.titreOffre }}</h4>
+                           <p class="price_text">Reduction  <span style="color: #262626;">{{ item.reduction }}</span></p>
+                           <p class="price_text">Du  <span style="color: #262626;">{{ item.dateDebut | date("D M y") }}</span> à {{ item.dateFin | date("D M y") }}</p>
+                              <br/>
+                           <center>
+                           <div class="btn_main">
+                              <div class="buy_bt"><a href="/produit">{{ item.idProduit.nomp }} </a></div>
+                           </div>
+                           </center>
+                        </div>
+                     </div>
+                  {% endfor %}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- jewellery  section end -->
+      <!-- footer section start -->
+      <div class="footer_section layout_padding">
+         <div class="container">
+            <center>
+            <a class="btn btn-warning text-Black" href="/fournisseur/add">Devenez Fournisseur</a>
+            </center>
+            <br/>
+            <div class="footer_logo"><a href="index.html"><img src="images/footer-logo.png"></a></div>
+            <div class="input_bt">
+               <input type="text" class="mail_bt" placeholder="Your Email" name="Your Email">
+               <span class="subscribe_bt" id="basic-addon2"><a href="#">Subscribe</a></span>
+            </div>
+            
+            <div class="footer_menu">
+               <ul>
+                  <li><a href="/">Meilleurs ventes</a></li>
+                  <li><a href="/">Idées Cadeaux</a></li>
+                  <li><a href="/">Nouvelles arrivées</a></li>
+                  <li><a href="/offres">Offres du jour</a></li>
+                  <li><a href="/produit">Produits</a></li>
+               </ul>
+            </div>
+            <div class="location_main">Assistance Téléphonique: <a href="#">+216 23 067 231</a></div>
+         </div>
+      </div>
+      <!-- footer section end -->
+      <!-- copyright section start -->
+      <div class="copyright_section">
+         <div class="container">
+            <p class="copyright_text">© 2024 ARYA's Team Tous les droits réservés </p>
+         </div>
+      </div>
+   </body>
+{% endblock %}

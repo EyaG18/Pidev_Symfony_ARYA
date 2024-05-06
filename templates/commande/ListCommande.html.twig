@@ -1,0 +1,77 @@
+{% extends 'baseBack.html.twig' %}
+
+{% block AabiElWest %}
+
+<h1>Liste actuelle des Commandes</h1>
+
+<!-- Table for displaying commands -->
+<table id="commandeTable" border="2">
+    <thead>
+        <tr>
+            <th>Référence Commande</th>
+            <th>Client</th>
+            <th>Email Client</th>
+            <th>Date commande</th>
+            <th>Livrable</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for commande in pagination %}
+        <tr>
+            <td>{{ commande.reference }}</td>
+            <td>{{ commande.idUser.nomuser }} {{ commande.idUser.prenomuser }}</td>
+            <td>{{ commande.idUser.emailusr }}</td>
+            <td>{{ commande.dateCom|date('Y-m-d') }}</td>
+            <td>{{ commande.livrable ? 'Oui' : 'Non' }}</td>
+            <td>{{ commande.status }}</td>
+            <td>
+                <a href="{{ path('Commande_update', {'id': commande.idCommande}) }}" class="btn btn-primary">Modifier</a>
+                <a href="{{ path('commande_delete', {'id': commande.idCommande}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')">Supprimer</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7">Aucun enregistrement trouvé</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination -->
+{{ knp_pagination_render(pagination) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Handle search button click event
+            $('#searchButton').click(function() {
+                applySearch();
+            });
+
+            // Handle enter key press event in the search input field
+            $('#searchInput').keypress(function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    applySearch();
+                }
+            });
+
+            function applySearch() {
+                var searchTerm = $('#searchInput').val().toLowerCase();
+                $('#commandeTable tbody tr').each(function() {
+                    var rowText = $(this).text().toLowerCase();
+                    if (rowText.includes(searchTerm)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

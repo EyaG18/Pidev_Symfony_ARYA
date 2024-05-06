@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Stock des Produits</title>
+    <style>
+        /* Ajoutez vos styles CSS ici */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            color: #ca2d4b;
+            margin: 10px;
+            font-family: Arial, sans-serif;
+        }
+        p {
+            font-family: Montserrat;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .rose-bebe {
+            background-color: #FFC0CB;
+            color: white;
+        }
+        /* Styles for header */
+        .header-container {
+            position: relative;
+            height: 100px;
+            background-color: #000;
+            color: #fff;
+        }
+        .header-logo {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+        }
+        .header-text {
+            position: absolute;
+            bottom: -25px;
+            left: -25px;
+        }
+        .date-text {
+            position: absolute;
+            bottom: -25px;
+            right: -25px;
+        }
+        .header {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .details {
+            font-size: 14px;
+            text-align: right;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .triangle {
+            font-size: 12px;
+            transform: rotate(90deg);
+        }
+        .user-image {
+            max-width: 200px;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="logo">Arya Management Tool</div>
+    <div class="details">
+        <p>Nom document: Liste des Produits en Stock</p>
+        <p>Délivré le : {{ "now"|date("d/m/Y H:i") }}</p>
+        <p>Version: 1.0.0</p>
+        <p>Rédigé par : Eya Gadhoumi, Gestionnaire du Stock</p>
+        <div class="triangle">Arya</div>
+    </div>
+    <img src="{{ absolute_url(asset('/images/logo2.png')) }}" alt="Eya Gadhoumi" class="user-image">
+</div>
+
+<h1>Bienvenue dans ARYA, l'outil révolutionnaire de Gestion de Boutiques</h1>
+<table class="table" border="1">
+    <thead>
+    <tr>
+        <th class="rose-bebe">Référence Produit</th>
+        <th class="rose-bebe">Nom Catégorie</th>
+        <th class="rose-bebe">Nom Produit</th>
+        <th class="rose-bebe">Prix Produit</th>
+        <th class="rose-bebe">Quantité en Stock</th>
+        <th class="rose-bebe">Quantité Seuil</th>
+        <th class="rose-bebe">Image du Produit</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for product in prod %}
+        <tr>
+            <td>{{ product.Id_Produit }}</td>
+            <td>{{ product.Id_Categorie.NomCategorie }}</td>
+            <td>{{ product.NomP }}</td>
+            <td>{{ product.PrixP }}</td>
+            <td>{{ product.QteP }}</td>
+            <td>{{ product.QteSeuilP }}</td>
+            <td>
+                <img src="{{ absolute_url(asset('uploadsProduit/' ~ product.ImageP)) }}"
+                     style="max-width: 100px; max-height: 100px;">
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="9">Aucun enregistrement trouvé</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<img src="{{ absolute_url(asset('/images/EyaGadhoumi.jpeg')) }}" alt="Eya Gadhoumi" class="user-image">
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

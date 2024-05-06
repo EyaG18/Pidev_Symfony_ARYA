@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mode de Livraison{% endblock %}
+{% block AabiElWest1 %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <!-- Placeholder for the form -->
+        {% include "livraison/AjoutLivraison.html.twig" %}
+
+        <!-- Your form goes here -->
+        {{ form_start(form) }}
+          <div class="form-container">
+            {{ form_row(form.livrable, {'attr': {'class': 'form-control'}}) }}
+          </div>
+          {{ form_end(form) }}
+
+        <!-- Checkout button -->
+        <form action="{{ path('checkout', {'userId': user.id_user }) }}" method="POST">
+          <button type="submit" class="btn btn-primary btn-lg">Checkout</button>
+        </form>
+
+        <!-- Back button -->
+        <button type="button" class="btn btn-primary" onclick="history.back()">Retour</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

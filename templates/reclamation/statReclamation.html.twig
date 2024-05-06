@@ -1,0 +1,72 @@
+{# templates/produit/TryChartJS.html.twig #}
+{% extends 'baseBack.html.twig' %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" integrity="sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w==" crossorigin="anonymous">
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script>
+		const stats = {{ stats|json_encode|raw }};
+
+// Définition des couleurs pour chaque clé
+const colors = [
+'rgba(255, 99, 132, 0.2)',
+'rgba(54, 162, 235, 0.2)',
+'rgba(255, 206, 86, 0.2)',
+'rgba(75, 192, 192, 0.2)',
+'rgba(153, 102, 255, 0.2)'
+// Ajoutez d'autres couleurs si nécessaire
+];
+
+// Création du tableau de datasets
+const datasets = Object.keys(stats).map((key, index) => ({
+label: key,
+data: [stats[key]],
+backgroundColor: colors[index], // Utilisation de la couleur correspondante
+borderColor: colors[index],
+borderWidth: 1
+}));
+
+// Création du graphique
+const ctx = document.getElementById('myChart').getContext('2d');
+new Chart(ctx, {
+type: 'bar',
+data: {
+labels: ['pourcentage'],
+datasets: datasets
+},
+options: {
+scales: {
+y: {
+beginAtZero: true
+}
+}
+}
+});
+	</script>
+	
+
+
+{% endblock %}
+
+{% block AabiElWest %}
+	<div class="container-fluid">
+		<div class="card shadow mb-4">
+			<div class="card-header py-3 d-flex justify-content-between align-items-center">
+				<div>
+					<h6 class="m-0 font-weight-bold text-primary">Etude sur les types des problémes les plus fréquens
+					</h6>
+				</div>
+			</div>
+			<canvas id="myChart" width="400" height="100"></canvas>
+
+
+		</div>
+	</div>
+
+
+{% endblock %}
